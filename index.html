@@ -88,17 +88,17 @@
             </ul>
 
             <!-- Tombol Tambah Produk -->
-            <button onclick="openModal('productModal')" class="mt-auto shrink-0 w-full py-2.5 bg-white/10 hover:bg-white text-white hover:text-brand-green border border-white/30 text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2 group">
+            <button onclick="openAddProductModal()" class="mt-auto shrink-0 w-full py-2.5 bg-white/10 hover:bg-white text-white hover:text-brand-green border border-white/30 text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2 group">
                 <svg class="w-4 h-4 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 <span class="whitespace-nowrap">Tambah Produk</span>
             </button>
         </div>
     </aside>
 
-    <!-- MAIN CONTENT (POLOS TANPA BACKGROUND POLKADOT) -->
+    <!-- MAIN CONTENT -->
     <main class="w-full flex-1 h-full flex flex-col p-4 md:p-8 lg:p-10 relative overflow-hidden justify-between min-h-0">
         
-        <!-- MOBILE HEADER BAR dengan Logo Sekbid 3 -->
+        <!-- MOBILE HEADER BAR -->
         <div class="md:hidden flex items-center justify-between pb-4 mb-2 shrink-0 border-b border-gray-200/60">
             <button onclick="toggleMobileSidebar()" class="p-2 bg-white text-brand-green rounded-xl shadow-sm border border-gray-200 focus:outline-none flex items-center justify-center">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@
             <div class="w-10"></div>
         </div>
 
-        <!-- TOP BAR DESKTOP HEADER dengan Logo Sekbid 3 -->
+        <!-- TOP BAR DESKTOP HEADER -->
         <div class="hidden md:flex items-center gap-3 mb-4 shrink-0">
             <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="w-9 h-9 rounded-full object-cover shadow-sm border border-brand-green/20" />
             <span class="text-xl font-bold tracking-tight text-brand-dark">Dashboard Sekbid 3</span>
@@ -159,7 +159,7 @@
                 <div class="bg-white rounded-2xl flex-1 flex flex-col shadow-soft border border-gray-100 mb-5 overflow-hidden min-h-0 relative">
                     
                     <!-- Tombol Tambah Pesanan -->
-                    <button onclick="openModal('orderModal')" class="absolute top-4 right-4 bg-brand-dark hover:bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 z-20 group">
+                    <button onclick="openAddOrderModal()" class="absolute top-4 right-4 bg-brand-dark hover:bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 z-20 group">
                         <svg class="w-4 h-4 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                         <span class="hidden sm:inline">Pesanan Baru</span>
                     </button>
@@ -176,7 +176,7 @@
                                     <th class="py-3 px-4 w-1/5 font-medium">Kelas</th>
                                     <th class="py-3 px-4 w-1/6 text-center font-medium">Jumlah</th>
                                     <th class="py-3 px-4 w-1/4 font-medium">Catatan</th>
-                                    <th class="py-3 px-4 w-16 text-center font-medium">Aksi</th>
+                                    <th class="py-3 px-4 w-24 text-center font-medium">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="orderList" class="text-sm">
@@ -194,7 +194,7 @@
         </footer>
     </main>
 
-    <!-- MODAL TAMBAH PRODUK -->
+    <!-- MODAL PRODUK (TAMBAH / EDIT) -->
     <div id="productModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="productModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
             
@@ -202,7 +202,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Tambah Produk</h2>
+            <h2 id="productModalTitle" class="text-2xl font-bold text-gray-900 mb-6">Tambah Produk</h2>
             <form id="productForm">
                 <div class="mb-5">
                     <label class="block font-semibold mb-2 text-sm text-gray-700">Nama Produk</label>
@@ -225,7 +225,7 @@
         </div>
     </div>
 
-    <!-- MODAL TAMBAH PESANAN -->
+    <!-- MODAL PESANAN (TAMBAH / EDIT) -->
     <div id="orderModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="orderModalInner" class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
             
@@ -233,7 +233,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Input Pesanan Baru</h2>
+            <h2 id="orderModalTitle" class="text-2xl font-bold text-gray-900 mb-6">Input Pesanan Baru</h2>
             <form id="orderForm" class="space-y-4 text-sm">
                 <div>
                     <label class="block font-semibold mb-1.5 text-gray-700">Nama Lengkap</label>
@@ -260,7 +260,7 @@
         </div>
     </div>
 
-    <!-- MODAL KONFIRMASI HAPUS (GITHUB STYLE) -->
+    <!-- MODAL KONFIRMASI HAPUS -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="deleteConfirmModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
             
@@ -290,6 +290,10 @@
 
         let isSidebarMinimized = false;
         let isMobileSidebarOpen = false;
+
+        // State Edit
+        let editingProductId = null;
+        let editingOrderId = null;
 
         // Toggle Sidebar Minimize (Desktop)
         function toggleSidebar() {
@@ -327,7 +331,7 @@
             }
         }
 
-        // Toggle Drawer Sidebar (Mobile ala Gemini)
+        // Toggle Drawer Sidebar (Mobile)
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
@@ -371,15 +375,52 @@
             }, 300);
         }
 
-        // PERBAIKAN LOGIKA INPUT MODAL HAPUS GITHUB STYLE
+        // MODE TAMBAH VS EDIT PRODUK
+        function openAddProductModal() {
+            editingProductId = null;
+            document.getElementById('productForm').reset();
+            document.getElementById('productModalTitle').innerText = "Tambah Produk";
+            document.getElementById('btnSubmitProduct').innerText = "Simpan Produk";
+            document.getElementById('productImageLabel').innerText = "Upload Foto Produk";
+            openModal('productModal');
+        }
+
+        function openEditProductModal(id, name) {
+            editingProductId = id;
+            document.getElementById('productForm').reset();
+            document.getElementById('productNameInput').value = name;
+            document.getElementById('productModalTitle').innerText = "Edit Nama Produk";
+            document.getElementById('btnSubmitProduct').innerText = "Simpan Perubahan";
+            document.getElementById('productImageLabel').innerText = "Upload Foto Produk Baru (Opsional)";
+            openModal('productModal');
+        }
+
+        // MODE TAMBAH VS EDIT PESANAN
+        function openAddOrderModal() {
+            editingOrderId = null;
+            document.getElementById('orderForm').reset();
+            document.getElementById('orderModalTitle').innerText = "Input Pesanan Baru";
+            document.getElementById('btnSubmitOrder').innerText = "Tambahkan Pesanan";
+            openModal('orderModal');
+        }
+
+        function openEditOrderModal(id, nama, kelas, jumlah, catatan) {
+            editingOrderId = id;
+            document.getElementById('orderNama').value = nama;
+            document.getElementById('orderKelas').value = kelas;
+            document.getElementById('orderJumlah').value = jumlah;
+            document.getElementById('orderCatatan').value = catatan || '';
+            document.getElementById('orderModalTitle').innerText = "Edit Informasi Pesanan";
+            document.getElementById('btnSubmitOrder').innerText = "Simpan Perubahan";
+            openModal('orderModal');
+        }
+
+        // PERBAIKAN LOGIKA INPUT MODAL HAPUS
         document.getElementById('deleteConfirmInput').addEventListener('input', function(e) {
             const btn = document.getElementById('btnExecuteDelete');
-            
-            // Mengambil nilai expected dari window karena di-set dari dalam module Firebase
             const expectedName = (window.deleteExpectedName || "").trim();
             const typedName = e.target.value.trim();
             
-            // Tombol hanya aktif jika input SAMA PERSIS dan TIDAK KOSONG
             if (expectedName !== "" && typedName === expectedName) {
                 btn.disabled = false;
             } else {
@@ -399,7 +440,7 @@
     <!-- FIREBASE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
@@ -418,7 +459,15 @@
         let currentProductId = null;
         let unsubscribeOrders = null;
 
-        // SISTEM KONFIRMASI HAPUS GITHUB STYLE (Disimpan di window object)
+        // TRIGGER EDIT & DELETE VIA WINDOW OBJECT
+        window.triggerEditProduct = function(productId, productName) {
+            openEditProductModal(productId, productName);
+        };
+
+        window.triggerEditOrder = function(orderId, nama, kelas, jumlah, catatan) {
+            openEditOrderModal(orderId, nama, kelas, jumlah, catatan);
+        };
+
         window.triggerDeleteProduct = function(productId, productName) {
             window.deleteType = 'product';
             window.deleteItemId = productId;
@@ -495,6 +544,11 @@
                 const productId = docSnap.id;
                 const isSelected = currentProductId === productId;
 
+                // Update judul header jika produk yang sedang dibuka di-edit nama-nya
+                if (isSelected) {
+                    document.getElementById('selectedProductName').innerText = data.name;
+                }
+
                 const li = document.createElement('li');
                 li.className = `group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${isSelected ? 'bg-white text-brand-green shadow-sm' : 'hover:bg-white/10 text-white'}`;
                 li.onclick = () => selectProduct(productId, data.name);
@@ -503,9 +557,27 @@
                 nameSpan.className = `flex-1 truncate pr-2 ${isSelected ? 'font-bold' : ''}`;
                 nameSpan.innerText = data.name;
 
+                const actionDiv = document.createElement('div');
+                actionDiv.className = "flex items-center gap-1 shrink-0";
+
+                // Tombol Edit Produk
+                const editBtn = document.createElement('button');
+                editBtn.title = "Edit Nama Produk";
+                editBtn.className = `p-1.5 rounded-lg transition-colors ${isSelected ? 'text-gray-500 hover:bg-gray-100 hover:text-brand-green' : 'text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
+                editBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                `;
+                editBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.triggerEditProduct(productId, data.name);
+                };
+
+                // Tombol Hapus Produk
                 const deleteBtn = document.createElement('button');
                 deleteBtn.title = "Hapus Produk";
-                deleteBtn.className = `p-1.5 rounded-lg transition-colors shrink-0 ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
+                deleteBtn.className = `p-1.5 rounded-lg transition-colors ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
                 deleteBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -516,8 +588,10 @@
                     window.triggerDeleteProduct(productId, data.name);
                 };
 
+                actionDiv.appendChild(editBtn);
+                actionDiv.appendChild(deleteBtn);
                 li.appendChild(nameSpan);
-                li.appendChild(deleteBtn);
+                li.appendChild(actionDiv);
                 productListEl.appendChild(li);
             });
         }, (error) => {
@@ -541,13 +615,15 @@
             const listItems = productListEl.children;
             for(let li of listItems) {
                 const span = li.querySelector('span');
-                const btn = li.querySelector('button');
+                const buttons = li.querySelectorAll('button');
                 if(span && span.innerText === name) {
                     li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-bold transition-all cursor-pointer bg-white text-brand-green shadow-sm';
-                    if(btn) btn.className = 'p-1.5 rounded-lg transition-colors shrink-0 text-red-500 hover:bg-red-50';
+                    if(buttons[0]) buttons[0].className = 'p-1.5 rounded-lg transition-colors text-gray-500 hover:bg-gray-100 hover:text-brand-green';
+                    if(buttons[1]) buttons[1].className = 'p-1.5 rounded-lg transition-colors text-red-500 hover:bg-red-50';
                 } else if(span) {
                     li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
-                    if(btn) btn.className = 'p-1.5 rounded-lg transition-colors shrink-0 text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100';
+                    if(buttons[0]) buttons[0].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100';
+                    if(buttons[1]) buttons[1].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100';
                 }
             }
             loadOrders(id);
@@ -595,11 +671,20 @@
                         </td>
                         <td class="py-3.5 px-4 text-gray-500 italic break-words text-sm">${data.catatan || '-'}</td>
                         <td class="py-3.5 px-4 text-center">
-                            <button onclick="window.triggerDeleteOrder('${orderId}', '${data.nama.replace(/'/g, "\\'")}')" title="Hapus Pesanan" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
+                            <div class="flex items-center justify-center gap-1">
+                                <!-- Edit Pesanan -->
+                                <button onclick="window.triggerEditOrder('${orderId}', '${data.nama.replace(/'/g, "\\'")}', '${data.kelas.replace(/'/g, "\\'")}', ${qty}, '${(data.catatan || '').replace(/'/g, "\\'")}')" title="Edit Pesanan" class="p-1.5 text-gray-400 hover:text-brand-green hover:bg-green-50 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <!-- Hapus Pesanan -->
+                                <button onclick="window.triggerDeleteOrder('${orderId}', '${data.nama.replace(/'/g, "\\'")}')" title="Hapus Pesanan" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </td>
                     `;
                     orderListEl.appendChild(tr);
@@ -611,7 +696,7 @@
             });
         }
 
-        // SIMPAN PRODUK
+        // SIMPAN / UPDATE PRODUK
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitProduct');
@@ -633,7 +718,15 @@
                     } catch (err) { console.warn("Upload gambar dilewati."); }
                 }
 
-                await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp() });
+                if (editingProductId) {
+                    // Update Produk
+                    const updateData = { name };
+                    if (imageUrl) updateData.imageUrl = imageUrl;
+                    await updateDoc(doc(db, "products", editingProductId), updateData);
+                } else {
+                    // Tambah Produk Baru
+                    await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp() });
+                }
                 
                 closeModal('productModal');
                 document.getElementById('productForm').reset();
@@ -641,12 +734,12 @@
             } catch (error) {
                 alert("Gagal menyimpan produk: " + error.message);
             } finally {
-                btn.innerHTML = "Simpan Produk";
+                btn.innerHTML = editingProductId ? "Simpan Perubahan" : "Simpan Produk";
                 btn.disabled = false;
             }
         });
 
-        // SIMPAN PESANAN
+        // SIMPAN / UPDATE PESANAN
         document.getElementById('orderForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!currentProductId) return;
@@ -656,20 +749,31 @@
             btn.disabled = true;
 
             try {
-                await addDoc(collection(db, "orders"), {
-                    productId: currentProductId,
+                const orderData = {
                     nama: document.getElementById('orderNama').value,
                     kelas: document.getElementById('orderKelas').value,
                     jumlah: Number(document.getElementById('orderJumlah').value),
-                    catatan: document.getElementById('orderCatatan').value,
-                    createdAt: serverTimestamp()
-                });
+                    catatan: document.getElementById('orderCatatan').value
+                };
+
+                if (editingOrderId) {
+                    // Update Pesanan
+                    await updateDoc(doc(db, "orders", editingOrderId), orderData);
+                } else {
+                    // Tambah Pesanan Baru
+                    await addDoc(collection(db, "orders"), {
+                        ...orderData,
+                        productId: currentProductId,
+                        createdAt: serverTimestamp()
+                    });
+                }
+
                 closeModal('orderModal');
                 document.getElementById('orderForm').reset();
             } catch (error) {
                 alert("Gagal menyimpan pesanan: " + error.message);
             } finally {
-                btn.innerHTML = "Tambahkan Pesanan";
+                btn.innerHTML = editingOrderId ? "Simpan Perubahan" : "Tambahkan Pesanan";
                 btn.disabled = false;
             }
         });
