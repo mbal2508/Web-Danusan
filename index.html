@@ -274,7 +274,7 @@
                 Ketik nama berikut <span id="deleteTargetText" class="font-bold text-gray-900 underline select-all bg-gray-100 px-1.5 py-0.5 rounded"></span> untuk mengonfirmasi:
             </p>
 
-            <input type="text" id="deleteConfirmInput" placeholder="Ketik persis nama di atas..." class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 mb-5 shadow-sm">
+            <input type="text" id="deleteConfirmInput" placeholder="Ketik persis nama di atas..." autocomplete="off" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 mb-5 shadow-sm">
             
             <button id="btnExecuteDelete" disabled class="w-full bg-red-600 disabled:bg-red-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm flex justify-center items-center gap-2">
                 Saya mengerti, hapus ini
@@ -288,11 +288,6 @@
 
         let isSidebarMinimized = false;
         let isMobileSidebarOpen = false;
-
-        // Dynamic State untuk Modal Hapus GitHub Style
-        let deleteType = null; // 'product' atau 'order'
-        let deleteItemId = null;
-        let deleteExpectedName = "";
 
         // Toggle Sidebar Minimize (Desktop)
         function toggleSidebar() {
@@ -374,10 +369,16 @@
             }, 300);
         }
 
-        // Input verification listener untuk modal hapus GitHub-style
+        // PERBAIKAN LOGIKA INPUT MODAL HAPUS GITHUB STYLE
         document.getElementById('deleteConfirmInput').addEventListener('input', function(e) {
             const btn = document.getElementById('btnExecuteDelete');
-            if (e.target.value.trim() === deleteExpectedName.trim()) {
+            
+            // Mengambil nilai expected dari window karena di-set dari dalam module Firebase
+            const expectedName = (window.deleteExpectedName || "").trim();
+            const typedName = e.target.value.trim();
+            
+            // Tombol hanya aktif jika input SAMA PERSIS dan TIDAK KOSONG
+            if (expectedName !== "" && typedName === expectedName) {
                 btn.disabled = false;
             } else {
                 btn.disabled = true;
@@ -415,7 +416,7 @@
         let currentProductId = null;
         let unsubscribeOrders = null;
 
-        // SISTEM KONFIRMASI HAPUS GITHUB STYLE
+        // SISTEM KONFIRMASI HAPUS GITHUB STYLE (Disimpan di window object)
         window.triggerDeleteProduct = function(productId, productName) {
             window.deleteType = 'product';
             window.deleteItemId = productId;
