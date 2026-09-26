@@ -3,416 +3,673 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Danusan</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Meta CSP yang ditambahkan sesuai permintaan Anda dan disesuaikan untuk Firebase -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:;">
-    
-    <title>FlowGuard - Worktime & Tracker</title>
-    
-    <link rel="icon" href="FlowGuard Logo's.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-green': '#1f5f3e',
+                        'brand-dark-green': '#133a25',
+                        'brand-white': '#f8fafc',
+                        'brand-dark': '#1e293b'
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(31, 95, 62, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root { --bg-app: #11111b; --bg-card: #181825; --bg-frame: #1e1e2e; --bg-input: #313244; --border-color: rgba(255,255,255,0.08); --fg-text: #cdd6f4; --subtext: #9399b2; --overlay: rgba(17,17,27,0.85); --btn-blue: #89b4fa; --btn-green: #a6e3a1; --btn-red: #f38ba8; --accent-yellow: #f9e2af; --disabled-bg: #45475a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-app); color: var(--fg-text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; background-image: radial-gradient(circle at 50% 0%, rgba(137,180,250,0.05), transparent 70%); }
-        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+        /* Custom Scrollbar Modern */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .header { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
-        .header-brand { display: flex; align-items: center; gap: 10px; }
-        .header-logo-img { height: 42px; filter: drop-shadow(0 4px 12px rgba(137,180,250,0.25)); }
-        .header h1 { font-size: 24px; font-weight: 700; color: var(--fg-text); }
-        .auth-status { display: flex; align-items: center; gap: 10px; }
+        /* Glassmorphism & Smooth Animations */
+        .glass-panel { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); }
+        .sidebar-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .content-fade { transition: opacity 0.3s ease, transform 0.3s ease; }
         
-        .btn, .btn-auth, .modal-btn { border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-auth { background: var(--bg-frame); border: 1px solid var(--border-color); color: var(--fg-text); padding: 6px 12px; font-size: 12px; }
-        .btn-auth:hover { border-color: var(--btn-blue); color: var(--btn-blue); }
-        
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; position: relative; }
-        .card-title { position: absolute; top: -11px; left: 14px; background: var(--bg-app); padding: 0 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--subtext); border-radius: 4px; }
-        
-        .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
-        .btn { padding: 12px 14px; font-size: 13px; color: #11111b; border-radius: 10px; }
-        .btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
-        .btn:disabled { background: var(--disabled-bg) !important; color: var(--subtext) !important; cursor: not-allowed; opacity: 0.6; }
-        .btn-blue { background: var(--btn-blue); } .btn-red { background: var(--btn-red); } .btn-green { background: var(--btn-green); }
-        .btn-stop { background: var(--btn-red); width: 100%; margin-top: 10px; display: none; }
-        
-        .custom-form { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; text-align: left; }
-        .form-group label { font-size: 12px; font-weight: 600; color: var(--subtext); }
-        
-        .input-field, .textarea-field { background: var(--bg-frame); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: var(--fg-text); font-size: 13px; outline: none; width: 100%; }
-        .input-field:focus, .textarea-field:focus { border-color: var(--btn-blue); }
-        .textarea-field { resize: vertical; min-height: 60px; }
-        
-        .input-group { display: flex; align-items: center; background: var(--bg-frame); border: 1px solid var(--border-color); border-radius: 8px; padding-right: 12px; transition: 0.2s; }
-        .input-group:focus-within { border-color: var(--btn-blue); }
-        .input-group .input-field { border: none; border-radius: 8px 0 0 8px; flex: 1; }
-        .input-group span { color: var(--subtext); font-size: 12px; font-weight: 500; }
-        
-        .status-frame { background: var(--bg-frame); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; }
-        .status-header { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--subtext); margin-bottom: 8px; }
-        .pulse-dot { width: 8px; height: 8px; background: var(--subtext); border-radius: 50%; }
-        .pulse-dot.active { background: var(--btn-green); box-shadow: 0 0 8px var(--btn-green); }
-        .label-status { font-size: 13px; white-space: pre-line; line-height: 1.5; font-weight: 500; }
-        
-        .sys-logs { width: 100%; display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
-        .sys-log { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
-        .sys-log.green { color: var(--btn-green); } .sys-log.yellow { color: var(--accent-yellow); }
-        .timer-badge { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 6px 16px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--btn-blue); display: none; }
-        
-        .logs-container { display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; margin-top: 6px; }
-        .log-item { background: var(--bg-frame); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-size: 12px; }
-        .log-header { display: flex; justify-content: space-between; color: var(--subtext); font-size: 11px; margin-bottom: 6px; }
-        .log-duration { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--btn-blue); }
-        .badge-cloud { background: rgba(166,227,161,0.2); color: var(--btn-green); font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-        .badge-local { background: rgba(249,226,175,0.2); color: var(--accent-yellow); font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase;}
-        .log-doc { color: var(--btn-green); font-size: 11px; text-decoration: none; word-break: break-all; display: block; margin-top: 4px;}
-        
-        /* Modals */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--overlay); backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.2s; padding: 16px; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; width: 100%; max-width: 340px; text-align: center; transform: scale(0.95); transition: 0.2s; }
-        .modal-overlay.active .modal-box { transform: scale(1); }
-        .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--btn-blue); }
-        .modal-body { font-size: 13px; color: var(--fg-text); margin-bottom: 18px; line-height: 1.5; white-space: pre-wrap; text-align: left;}
-        .modal-actions { display: flex; gap: 8px; justify-content: center; }
-        .modal-btn { flex: 1; padding: 10px; font-size: 13px; }
-        .modal-btn-primary { background: var(--btn-blue); color: #11111b; }
-        .modal-btn-green { background: var(--btn-green); color: #11111b; }
-        .modal-btn-secondary { background: var(--bg-input); color: var(--fg-text); }
-        .footer { text-align: center; font-size: 11px; color: var(--subtext); opacity: 0.7; }
+        /* Hide scrollbar completely but allow scrolling */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-brand-white text-brand-dark h-screen w-screen overflow-hidden flex antialiased selection:bg-brand-green selection:text-white">
 
-    <div class="container">
-        <div class="header">
-            <div class="header-brand">
-                <img src="FlowGuard Logo's.png" alt="Logo" class="header-logo-img" onerror="this.style.display='none'">
-                <h1>FlowGuard</h1>
-            </div>
-            <div class="auth-status" id="auth-container">
-                <!-- Diisi via JS -->
+    <!-- BACKDROP MOBILE -->
+    <div id="sidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-30 hidden md:hidden transition-opacity duration-300"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar-transition fixed inset-y-0 left-0 z-40 w-72 md:relative md:inset-auto md:translate-x-0 -translate-x-full bg-gradient-to-b from-brand-green to-brand-dark-green text-white p-5 md:p-6 shadow-2xl flex flex-col shrink-0 md:rounded-r-2xl overflow-visible">
+        
+        <!-- TOMBOL PANAH TOGGLE (Desktop) -->
+        <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="hidden md:flex absolute top-5 -right-4 bg-white text-brand-green border border-gray-200 rounded-full p-1.5 shadow-md hover:shadow-glow hover:scale-110 transition-all duration-300 focus:outline-none z-50 items-center justify-center">
+            <svg id="toggleIcon" class="w-5 h-5 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+
+        <!-- Tombol Tutup Sidebar (Mobile) -->
+        <button onclick="toggleMobileSidebar()" class="md:hidden absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 rounded-full p-2 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+
+        <!-- Logo Image Sekbid 3 -->
+        <div id="logoContainer" class="flex items-center justify-center mb-6 mt-2 md:mt-0 h-14 w-full shrink-0 content-fade origin-left">
+            <div class="bg-white/10 p-2 rounded-2xl backdrop-blur-sm border border-white/20 shadow-inner flex items-center justify-center">
+                <img src="logo sekbid 3.jpg" alt="Logo Sekbid 3" class="h-10 w-10 object-cover rounded-full shadow-sm" />
             </div>
         </div>
+        
+        <!-- Konten Sidebar (Daftar Produk) -->
+        <div id="sidebarContent" class="flex-1 flex flex-col min-h-0 content-fade origin-top-left w-full">
+            <h2 class="text-sm font-semibold mb-3 text-green-100 uppercase tracking-wider shrink-0 opacity-80">Daftar Produk</h2>
+            
+            <!-- List Produk -->
+            <ul id="productList" class="flex-1 overflow-y-auto space-y-1.5 mb-4 pr-1 no-scrollbar min-h-0 w-full">
+                <li class="text-center text-green-300/80 italic text-sm mt-4">Memuat produk...</li>
+            </ul>
 
-        <div class="card">
-            <div class="card-title">Quick Mode</div>
-            <div class="preset-grid">
-                <button id="btn-preset-1" class="btn btn-blue">1 Hr Work, 30 Min Break</button>
-                <button id="btn-preset-2" class="btn btn-red">Work Without Break</button>
+            <!-- Tombol Tambah Produk -->
+            <button onclick="openModal('productModal')" class="mt-auto shrink-0 w-full py-2.5 bg-white/10 hover:bg-white text-white hover:text-brand-green border border-white/30 text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2 group">
+                <svg class="w-4 h-4 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span class="whitespace-nowrap">Tambah Produk</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="w-full flex-1 h-full flex flex-col p-4 md:p-8 lg:p-10 relative overflow-hidden justify-between min-h-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IjNlMmU4ZjAiIGZpbGwtb3BhY2l0eT0iMC40Ii8+PC9zdmc+')]">
+        
+        <!-- MOBILE HEADER BAR dengan Logo Sekbid 3 -->
+        <div class="md:hidden flex items-center justify-between pb-4 mb-2 shrink-0 border-b border-gray-200/60">
+            <button onclick="toggleMobileSidebar()" class="p-2 bg-white text-brand-green rounded-xl shadow-sm border border-gray-200 focus:outline-none flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="flex items-center gap-2.5">
+                <img src="logo sekbid 3.jpg" alt="Logo Sekbid 3" class="w-8 h-8 rounded-full object-cover shadow-sm border border-brand-green/20" />
+                <h1 class="text-base font-bold text-brand-green italic tracking-tight">Dashboard Danusan</h1>
             </div>
+            <div class="w-10"></div>
         </div>
 
-        <div class="card">
-            <div class="card-title">Custom Mode</div>
-            <div class="custom-form">
-                <div class="form-row">
-                    <div class="form-group"><label>Work Hours</label><input type="number" id="custom-hour" class="input-field" placeholder="1.5" step="0.1"></div>
-                    <div class="form-group"><label>Break (Hours)</label><input type="number" id="custom-break" class="input-field" placeholder="0.5" step="0.1"></div>
+        <!-- TOP BAR DESKTOP HEADER dengan Logo Sekbid 3 -->
+        <div class="hidden md:flex items-center gap-3 mb-4 shrink-0">
+            <img src="logo sekbid 3.jpg" alt="Logo Sekbid 3" class="w-9 h-9 rounded-full object-cover shadow-sm border border-brand-green/20" />
+            <span class="text-xl font-bold tracking-tight text-brand-dark">Dashboard Sekbid 3</span>
+        </div>
+
+        <div class="flex-1 flex flex-col min-h-0 max-w-6xl w-full mx-auto relative z-10">
+            
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="m-auto flex flex-col items-center justify-center text-center glass-panel p-10 md:p-14 rounded-3xl shadow-soft transform transition-all duration-500">
+                <div class="bg-gradient-to-tr from-green-100 to-green-50 p-6 rounded-full mb-6 shadow-sm border border-green-200/50">
+                    <svg class="w-16 h-16 text-brand-green opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
                 </div>
-                <button id="btn-custom" class="btn btn-green">Start Custom Mode</button>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 tracking-tight">Belum Ada Produk Dipilih</h2>
+                <p class="text-gray-500 max-w-sm text-sm md:text-base leading-relaxed">Pilih produk di sidebar atau buat yang baru untuk mulai mengelola pesanan Danusan Anda.</p>
             </div>
-        </div>
 
-        <div class="status-frame">
-            <div class="status-header"><div id="pulse-dot" class="pulse-dot"></div><span>System Status</span></div>
-            <div id="label-status" class="label-status">Status program akan muncul di sini...</div>
-            <div class="sys-logs"><div id="label-sys" class="sys-log green"></div><div id="label-back" class="sys-log yellow"></div></div>
-            <div id="timer-badge" class="timer-badge">Sisa Waktu: <span id="time-left">00:00:00</span></div>
-            <button id="btn-stop-work" class="btn btn-stop">Stop Working & Save Log</button>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Riwayat Kerja</div>
-            <div class="logs-container" id="logs-container"></div>
-        </div>
-
-        <div class="footer">© 2026 Jembar Muhammad Firdiana.</div>
-    </div>
-
-    <!-- Modal Khusus Auth -->
-    <div id="auth-modal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-title">Identitas Akun</div>
-            <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
-                <div class="form-group">
-                    <label>Nama Akun (Tanpa Spasi)</label>
-                    <div class="input-group">
-                        <input type="text" id="auth-username" class="input-field" placeholder="contoh: jembar">
-                        <span>@gmail.com</span>
+            <!-- DASHBOARD UTAMA -->
+            <div id="mainDashboard" class="hidden h-full flex-col min-h-0 animate-[fadeIn_0.4s_ease-out]">
+                
+                <!-- HEADER (Nama Produk) -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 shrink-0 gap-4">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-brand-green mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span> Produk Aktif
+                        </span>
+                        <h2 id="selectedProductName" class="text-3xl md:text-4xl font-bold text-gray-900 break-words tracking-tight">(Nama Produk)</h2>
+                    </div>
+                    
+                    <!-- KOTAK TOTAL PESANAN -->
+                    <div class="bg-white px-6 py-3 rounded-2xl shadow-soft border border-gray-100 flex items-center gap-4 shrink-0">
+                        <div class="p-2 bg-green-50 rounded-lg">
+                            <svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Pesanan</p>
+                            <p class="text-2xl font-bold text-gray-900 leading-none mt-1"><span id="totalPesanan">0</span></p>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="auth-password" class="input-field" placeholder="Minimal 6 karakter">
+
+                <!-- KOTAK TABEL PESANAN -->
+                <div class="bg-white rounded-2xl flex-1 flex flex-col shadow-soft border border-gray-100 mb-5 overflow-hidden min-h-0 relative">
+                    
+                    <!-- Tombol Tambah Pesanan -->
+                    <button onclick="openModal('orderModal')" class="absolute top-4 right-4 bg-brand-dark hover:bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 z-20 group">
+                        <svg class="w-4 h-4 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                        <span class="hidden sm:inline">Pesanan Baru</span>
+                    </button>
+
+                    <h3 class="text-lg font-bold px-6 py-4 border-b border-gray-100 shrink-0 text-gray-800">Daftar Pesanan</h3>
+                    
+                    <!-- AREA SCROLL TABEL -->
+                    <div class="overflow-auto flex-1 min-h-0 px-2 pb-2">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead class="sticky top-0 bg-white z-10">
+                                <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                                    <th class="py-3 px-4 w-12 text-center font-medium">No.</th>
+                                    <th class="py-3 px-4 w-1/4 font-medium">Nama Siswa</th>
+                                    <th class="py-3 px-4 w-1/5 font-medium">Kelas</th>
+                                    <th class="py-3 px-4 w-1/6 text-center font-medium">Jumlah</th>
+                                    <th class="py-3 px-4 w-1/4 font-medium">Catatan</th>
+                                    <th class="py-3 px-4 w-16 text-center font-medium">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderList" class="text-sm">
+                                <tr><td colspan="6" class="text-center py-8 text-gray-400">Belum ada pesanan masuk.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button id="btn-auth-login" class="modal-btn modal-btn-primary">Masuk</button>
-                <button id="btn-auth-register" class="modal-btn modal-btn-secondary">Daftar</button>
-            </div>
-            <div style="margin-top:12px;"><button id="btn-auth-close" style="background:none; border:none; color:var(--subtext); font-size:12px; cursor:pointer;">Batal</button></div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="pt-2 text-center text-xs md:text-sm text-gray-400 font-medium shrink-0 relative z-10">
+            &copy; 2026 Jembar Muhammad Firdiana. All rights reserved.
+        </footer>
+    </main>
+
+    <!-- MODAL TAMBAH PRODUK -->
+    <div id="productModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <div id="productModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
+            
+            <button onclick="closeModal('productModal')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Tambah Produk</h2>
+            <form id="productForm">
+                <div class="mb-5">
+                    <label class="block font-semibold mb-2 text-sm text-gray-700">Nama Produk</label>
+                    <input type="text" id="productNameInput" required placeholder="Contoh: Risol Mayo" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all shadow-sm">
+                </div>
+                <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm text-gray-700">Foto Produk (Opsional)</label>
+                    <div class="border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100 hover:border-brand-green transition-all relative group">
+                        <input type="file" id="productImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-brand-green">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span id="productImageLabel" class="font-medium text-sm">Upload Foto Produk</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" id="btnSubmitProduct" class="w-full bg-brand-dark hover:bg-gray-800 text-white font-semibold py-3.5 rounded-xl transition-colors shadow-md text-sm flex justify-center items-center gap-2">
+                    Simpan Produk
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Modal Standar Sistem -->
-    <div id="custom-modal" class="modal-overlay">
-        <div class="modal-box">
-            <div id="modal-title" class="modal-title">FlowGuard</div>
-            <div id="modal-body" class="modal-body"></div>
-            <div id="modal-actions" class="modal-actions"></div>
+    <!-- MODAL TAMBAH PESANAN -->
+    <div id="orderModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <div id="orderModalInner" class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
+            
+            <button onclick="closeModal('orderModal')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Input Pesanan Baru</h2>
+            <form id="orderForm" class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-semibold mb-1.5 text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="orderNama" placeholder="Contoh: Jembar Muhammad" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-1/2">
+                        <label class="block font-semibold mb-1.5 text-gray-700">Kelas</label>
+                        <input type="text" id="orderKelas" placeholder="Contoh: XII.2" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block font-semibold mb-1.5 text-gray-700">Jumlah Pesanan</label>
+                        <input type="number" id="orderJumlah" placeholder="0" required min="1" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow text-center">
+                    </div>
+                </div>
+                <div class="pb-2">
+                    <label class="block font-semibold mb-1.5 text-gray-700">Catatan (Opsional)</label>
+                    <input type="text" id="orderCatatan" placeholder="Contoh: Titip ke panitia classmeet" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
+                </div>
+                <button type="submit" id="btnSubmitOrder" class="w-full bg-brand-green hover:bg-green-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-md text-base mt-2">
+                    Tambahkan Pesanan
+                </button>
+            </form>
         </div>
     </div>
 
+    <!-- MODAL KONFIRMASI HAPUS (GITHUB STYLE) -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <div id="deleteConfirmModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
+            
+            <button onclick="closeModal('deleteConfirmModal')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 id="deleteModalTitle" class="text-xl font-bold text-red-600 mb-2">Konfirmasi Penghapusan</h2>
+            <p class="text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 border border-red-100 font-medium leading-relaxed">
+                Tindakan ini permanen dan tidak dapat dibatalkan.
+            </p>
+            <p id="deleteModalInstruction" class="text-sm text-gray-600 mb-3">
+                Ketik nama berikut <span id="deleteTargetText" class="font-bold text-gray-900 underline select-all bg-gray-100 px-1.5 py-0.5 rounded"></span> untuk mengonfirmasi:
+            </p>
+
+            <input type="text" id="deleteConfirmInput" placeholder="Ketik persis nama di atas..." class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 mb-5 shadow-sm">
+            
+            <button id="btnExecuteDelete" disabled class="w-full bg-red-600 disabled:bg-red-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm flex justify-center items-center gap-2">
+                Saya mengerti, hapus ini
+            </button>
+        </div>
+    </div>
+
+    <!-- UI Scripts -->
+    <script>
+        document.head.insertAdjacentHTML('beforeend', '<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }</style>');
+
+        let isSidebarMinimized = false;
+        let isMobileSidebarOpen = false;
+
+        // Dynamic State untuk Modal Hapus GitHub Style
+        let deleteType = null; // 'product' atau 'order'
+        let deleteItemId = null;
+        let deleteExpectedName = "";
+
+        // Toggle Sidebar Minimize (Desktop)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarContent = document.getElementById('sidebarContent');
+            const logoContainer = document.getElementById('logoContainer');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            isSidebarMinimized = !isSidebarMinimized;
+
+            if (isSidebarMinimized) {
+                sidebarContent.classList.add('opacity-0', 'scale-95');
+                logoContainer.classList.add('opacity-0', 'scale-95');
+                
+                setTimeout(() => {
+                    sidebarContent.classList.add('hidden');
+                    logoContainer.classList.add('hidden');
+                    sidebar.classList.remove('md:w-72', 'md:p-6'); 
+                    sidebar.classList.add('md:w-20', 'md:p-3');
+                    toggleIcon.classList.add('rotate-180');
+                }, 150);
+                
+            } else {
+                sidebar.classList.remove('md:w-20', 'md:p-3'); 
+                sidebar.classList.add('md:w-72', 'md:p-6');
+                toggleIcon.classList.remove('rotate-180');
+                
+                setTimeout(() => {
+                    sidebarContent.classList.remove('hidden');
+                    logoContainer.classList.remove('hidden');
+                    void sidebarContent.offsetWidth; 
+                    sidebarContent.classList.remove('opacity-0', 'scale-95');
+                    logoContainer.classList.remove('opacity-0', 'scale-95');
+                }, 350);
+            }
+        }
+
+        // Toggle Drawer Sidebar (Mobile ala Gemini)
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            isMobileSidebarOpen = !isMobileSidebarOpen;
+
+            if (isMobileSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        // FUNGSI BUKA/TUTUP MODAL
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            const inner = document.getElementById(id + 'Inner');
+            
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex');
+            void modal.offsetWidth; 
+            modal.classList.remove('opacity-0');
+            inner.classList.remove('scale-95');
+            inner.classList.add('scale-100');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const inner = document.getElementById(id + 'Inner');
+            
+            modal.classList.add('opacity-0');
+            inner.classList.remove('scale-100');
+            inner.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Input verification listener untuk modal hapus GitHub-style
+        document.getElementById('deleteConfirmInput').addEventListener('input', function(e) {
+            const btn = document.getElementById('btnExecuteDelete');
+            if (e.target.value.trim() === deleteExpectedName.trim()) {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+        });
+
+        // Update Text File Input
+        document.getElementById('productImageInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            document.getElementById('productImageLabel').innerHTML = fileName ? 
+                `<span class="text-brand-green font-semibold truncate max-w-[200px] inline-block">${fileName}</span>` : 
+                "Upload Foto Produk";
+        });
+    </script>
+
+    <!-- FIREBASE MODULE -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDa1BQzIYtMu5kDmWZyd-DiludUqrmQZC0",
-            authDomain: "flowguard-web.firebaseapp.com",
-            projectId: "flowguard-web",
-            storageBucket: "flowguard-web.firebasestorage.app"
+            apiKey: "AIzaSyCQQfViHcglTdOMBn-HGKcAIl05BPqEerI",
+            authDomain: "web-danusan-29a9d.firebaseapp.com",
+            projectId: "web-danusan-29a9d",
+            storageBucket: "web-danusan-29a9d.firebasestorage.app",
+            messagingSenderId: "355990822526",
+            appId: "1:355990822526:web:4767d88bcd22b1e7a3022f"
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        let currentUser = null, isRunning = false, countdownInterval = null, alarmInterval = null, workStartTime = null, audioCtx = null;
+        let currentProductId = null;
+        let unsubscribeOrders = null;
 
-        const ui = {
-            authContainer: document.getElementById('auth-container'),
-            preset1: document.getElementById('btn-preset-1'), preset2: document.getElementById('btn-preset-2'),
-            customBtn: document.getElementById('btn-custom'), stopBtn: document.getElementById('btn-stop-work'),
-            hourInput: document.getElementById('custom-hour'), breakInput: document.getElementById('custom-break'),
-            lblStatus: document.getElementById('label-status'), lblSys: document.getElementById('label-sys'),
-            lblBack: document.getElementById('label-back'), timerBadge: document.getElementById('timer-badge'),
-            timeLeft: document.getElementById('time-left'), pulse: document.getElementById('pulse-dot'),
-            logs: document.getElementById('logs-container'),
-            authModal: document.getElementById('auth-modal'), authUsername: document.getElementById('auth-username'), authPass: document.getElementById('auth-password')
+        // SISTEM KONFIRMASI HAPUS GITHUB STYLE
+        window.triggerDeleteProduct = function(productId, productName) {
+            window.deleteType = 'product';
+            window.deleteItemId = productId;
+            window.deleteExpectedName = productName;
+
+            document.getElementById('deleteModalTitle').innerText = "Hapus Produk";
+            document.getElementById('deleteTargetText').innerText = productName;
+            document.getElementById('deleteConfirmInput').value = "";
+            document.getElementById('btnExecuteDelete').disabled = true;
+
+            openModal('deleteConfirmModal');
         };
 
-        // --- SISTEM BACA LOG ANTI CRASH ---
-        const getLocalLogs = () => {
+        window.triggerDeleteOrder = function(orderId, studentName) {
+            window.deleteType = 'order';
+            window.deleteItemId = orderId;
+            window.deleteExpectedName = studentName;
+
+            document.getElementById('deleteModalTitle').innerText = "Hapus Pesanan";
+            document.getElementById('deleteTargetText').innerText = studentName;
+            document.getElementById('deleteConfirmInput').value = "";
+            document.getElementById('btnExecuteDelete').disabled = true;
+
+            openModal('deleteConfirmModal');
+        };
+
+        // EKSEKUSI HAPUS
+        document.getElementById('btnExecuteDelete').addEventListener('click', async () => {
+            const btn = document.getElementById('btnExecuteDelete');
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menghapus...`;
+            btn.disabled = true;
+
             try {
-                const data = localStorage.getItem('flowguard_logs');
-                if (!data) return [];
-                const parsedData = JSON.parse(data);
-                return Array.isArray(parsedData) ? parsedData : [];
+                if (window.deleteType === 'product') {
+                    await deleteDoc(doc(db, "products", window.deleteItemId));
+                    if (currentProductId === window.deleteItemId) {
+                        currentProductId = null;
+                        document.getElementById('mainDashboard').classList.add('hidden');
+                        document.getElementById('mainDashboard').classList.remove('flex');
+                        document.getElementById('emptyState').classList.remove('opacity-0', 'hidden');
+                    }
+                } else if (window.deleteType === 'order') {
+                    await deleteDoc(doc(db, "orders", window.deleteItemId));
+                }
+
+                closeModal('deleteConfirmModal');
             } catch (error) {
-                console.warn("Format data lokal versi lama terdeteksi, membersihkan data yang error agar web tidak crash...");
-                localStorage.removeItem('flowguard_logs');
-                return [];
+                alert("Gagal menghapus: " + error.message);
+            } finally {
+                btn.innerHTML = "Saya mengerti, hapus ini";
+                btn.disabled = false;
             }
-        };
-
-        function toggleAuthModal(show) {
-            ui.authUsername.value = ''; ui.authPass.value = '';
-            show ? ui.authModal.classList.add('active') : ui.authModal.classList.remove('active');
-        }
-
-        document.getElementById('btn-auth-close').onclick = () => toggleAuthModal(false);
-
-        document.getElementById('btn-auth-login').onclick = async () => {
-            const user = ui.authUsername.value.trim().replace(/\s/g, '');
-            const pass = ui.authPass.value;
-            if(!user || !pass) return alert("Harap isi Nama Akun dan Password!");
-            
-            try {
-                ui.lblStatus.textContent = "Sedang login...";
-                await signInWithEmailAndPassword(auth, `${user}@gmail.com`, pass);
-                toggleAuthModal(false);
-                ui.lblStatus.textContent = "Login berhasil!";
-            } catch(e) {
-                alert("Gagal masuk. Periksa kembali akun atau password Anda.");
-                ui.lblStatus.textContent = "Gagal login.";
-            }
-        };
-
-        document.getElementById('btn-auth-register').onclick = async () => {
-            const user = ui.authUsername.value.trim().replace(/\s/g, '');
-            const pass = ui.authPass.value;
-            if(!user || pass.length < 6) return alert("Nama akun wajib diisi & password minimal 6 karakter!");
-            
-            try {
-                await createUserWithEmailAndPassword(auth, `${user}@gmail.com`, pass);
-                toggleAuthModal(false);
-                alert("Akun berhasil didaftarkan dan Anda sudah masuk!");
-            } catch(e) {
-                if(e.code === 'auth/email-already-in-use') alert("Nama akun ini sudah dipakai, silakan gunakan yang lain atau klik Masuk.");
-                else alert("Gagal daftar: " + e.message);
-            }
-        };
-
-        onAuthStateChanged(auth, async (user) => {
-            currentUser = user;
-            if (user) {
-                const displayName = user.email.split('@')[0];
-                ui.authContainer.innerHTML = `<span style="font-size:13px; font-weight:700; color:var(--btn-blue);">Hi, ${displayName}</span><button class="btn-auth" id="btn-logout">Logout</button>`;
-                document.getElementById('btn-logout').onclick = () => { initAudio(); signOut(auth); };
-                await syncLocalLogsToCloud();
-            } else {
-                ui.authContainer.innerHTML = `<button class="btn-auth" id="btn-login-trigger">Masuk / Daftar</button>`;
-                document.getElementById('btn-login-trigger').onclick = () => { initAudio(); toggleAuthModal(true); };
-            }
-            renderLogs();
         });
 
-        function initAudio() {
-            if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; if (AudioContext) audioCtx = new AudioContext(); }
-            if (audioCtx?.state === 'suspended') audioCtx.resume();
+        // BACA PRODUK
+        const productListEl = document.getElementById('productList');
+        const qProducts = collection(db, "products");
+        
+        onSnapshot(qProducts, (snapshot) => {
+            productListEl.innerHTML = '';
+            if (snapshot.empty) {
+                productListEl.innerHTML = '<li class="text-center text-green-200/60 text-sm mt-4">Belum ada produk</li>';
+                return;
+            }
+
+            const sortedProducts = snapshot.docs.sort((a, b) => {
+                const timeA = a.data().createdAt?.toMillis() || Date.now();
+                const timeB = b.data().createdAt?.toMillis() || Date.now();
+                return timeB - timeA;
+            });
+
+            sortedProducts.forEach((docSnap) => {
+                const data = docSnap.data();
+                const productId = docSnap.id;
+                const isSelected = currentProductId === productId;
+
+                const li = document.createElement('li');
+                li.className = `group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${isSelected ? 'bg-white text-brand-green shadow-sm' : 'hover:bg-white/10 text-white'}`;
+                li.onclick = () => selectProduct(productId, data.name);
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = `flex-1 truncate pr-2 ${isSelected ? 'font-bold' : ''}`;
+                nameSpan.innerText = data.name;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.title = "Hapus Produk";
+                deleteBtn.className = `p-1.5 rounded-lg transition-colors shrink-0 ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
+                deleteBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                `;
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.triggerDeleteProduct(productId, data.name);
+                };
+
+                li.appendChild(nameSpan);
+                li.appendChild(deleteBtn);
+                productListEl.appendChild(li);
+            });
+        }, (error) => {
+            console.error("Gagal load produk:", error);
+            productListEl.innerHTML = `<li class="text-center text-red-200 text-xs mt-2 bg-red-900/50 p-2 rounded">Error: ${error.message}</li>`;
+        });
+
+        // PILIH PRODUK
+        function selectProduct(id, name) {
+            currentProductId = id;
+            
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            document.getElementById('mainDashboard').classList.add('flex');
+            document.getElementById('selectedProductName').innerText = name;
+
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            }
+
+            const listItems = productListEl.children;
+            for(let li of listItems) {
+                const span = li.querySelector('span');
+                const btn = li.querySelector('button');
+                if(span && span.innerText === name) {
+                    li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-bold transition-all cursor-pointer bg-white text-brand-green shadow-sm';
+                    if(btn) btn.className = 'p-1.5 rounded-lg transition-colors shrink-0 text-red-500 hover:bg-red-50';
+                } else if(span) {
+                    li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
+                    if(btn) btn.className = 'p-1.5 rounded-lg transition-colors shrink-0 text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100';
+                }
+            }
+            loadOrders(id);
         }
 
-        function playMelody() {
-            if (!audioCtx) return;
-            const playNote = (f, s, d) => {
-                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-                o.type = 'sine'; o.frequency.setValueAtTime(f, audioCtx.currentTime + s);
-                g.gain.setValueAtTime(0.25, audioCtx.currentTime + s); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + s + d);
-                o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime + s); o.stop(audioCtx.currentTime + s + d);
-            };
-            playNote(523.25, 0, 0.25); playNote(659.25, 0.15, 0.25); playNote(783.99, 0.3, 0.4);
-        }
+        // BACA PESANAN
+        function loadOrders(productId) {
+            const orderListEl = document.getElementById('orderList');
+            const totalEl = document.getElementById('totalPesanan');
+            
+            if(unsubscribeOrders) unsubscribeOrders();
 
-        function formatSec(s) { return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+            const qOrders = query(collection(db, "orders"), where("productId", "==", productId));
+            
+            unsubscribeOrders = onSnapshot(qOrders, (snapshot) => {
+                orderListEl.innerHTML = '';
+                let totalPesanan = 0;
 
-        function showCustomModal(title, text, btns) {
-            return new Promise((res) => {
-                initAudio(); if(alarmInterval) clearInterval(alarmInterval); playMelody(); alarmInterval = setInterval(playMelody, 1500);
-                const overlay = document.getElementById('custom-modal');
-                document.getElementById('modal-title').textContent = title;
-                document.getElementById('modal-body').innerHTML = text;
-                const acts = document.getElementById('modal-actions'); acts.innerHTML = '';
-                btns.forEach(b => {
-                    const btn = document.createElement('button'); btn.className = `modal-btn ${b.class}`; btn.textContent = b.text;
-                    btn.onclick = () => { if(alarmInterval) clearInterval(alarmInterval); overlay.classList.remove('active'); res(b.value ? b.value() : true); };
-                    acts.appendChild(btn);
+                if (snapshot.empty) {
+                    orderListEl.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-gray-400">Belum ada pesanan masuk untuk produk ini.</td></tr>';
+                    totalEl.innerText = '0';
+                    return;
+                }
+
+                const sortedDocs = snapshot.docs.sort((a, b) => {
+                    const timeA = a.data().createdAt?.toMillis() || Date.now();
+                    const timeB = b.data().createdAt?.toMillis() || Date.now();
+                    return timeB - timeA;
                 });
-                overlay.classList.add('active');
-            });
-        }
-        
-        const showAlert = (text, title = "FlowGuard") => showCustomModal(title, text, [{ text: 'OK', value: ()=>true, class: 'modal-btn-primary' }]);
 
-        function setUILock(locked) {
-            ui.preset1.disabled = locked; ui.preset2.disabled = locked; ui.customBtn.disabled = locked;
-            ui.hourInput.disabled = locked; ui.breakInput.disabled = locked;
-            locked ? (ui.pulse.classList.add('active'), ui.stopBtn.style.display = 'block') : (ui.pulse.classList.remove('active'), ui.stopBtn.style.display = 'none', ui.timerBadge.style.display = 'none');
-        }
+                sortedDocs.forEach((docSnap, index) => {
+                    const data = docSnap.data();
+                    const orderId = docSnap.id;
+                    const qty = parseInt(data.jumlah) || 0;
+                    totalPesanan += qty;
 
-        function startCountdown(sec) {
-            return new Promise((res) => {
-                let r = sec; ui.timerBadge.style.display = 'block'; ui.timeLeft.textContent = formatSec(r);
-                if (countdownInterval) clearInterval(countdownInterval);
-                countdownInterval = setInterval(() => {
-                    if (!isRunning) return clearInterval(countdownInterval), ui.timerBadge.style.display = 'none', res();
-                    r--; ui.timeLeft.textContent = formatSec(r);
-                    if (r <= 0) { clearInterval(countdownInterval); ui.timerBadge.style.display = 'none'; res(); }
-                }, 1000);
-            });
-        }
-        
-        async function syncLocalLogsToCloud() {
-            if (!currentUser) return;
-            const locals = getLocalLogs(); if (!locals.length) return;
-            for (const log of locals) {
-                try { await addDoc(collection(db, "work_logs"), { userId: currentUser.uid, durationFormatted: log.durationFormatted || "00:00", secondsWorked: log.secondsWorked || 0, taskDescription: log.taskDescription || "Lokal", docLink: log.docLink || "", createdAt: new Date(log.timestamp || Date.now()) }); } catch(e){}
-            }
-            localStorage.removeItem('flowguard_logs');
-        }
-
-        async function renderLogs() {
-            ui.logs.innerHTML = ''; let logs = [];
-            if (currentUser) {
-                try {
-                    const q = query(collection(db, "work_logs"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
-                    const snap = await getDocs(q);
-                    snap.forEach(doc => {
-                        const data = doc.data();
-                        const dateStr = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString('id-ID') : new Date().toLocaleString('id-ID');
-                        logs.push({...data, isCloud: true, dateStr});
-                    });
-                } catch(e){ console.error("Error get cloud logs:", e); }
-            } else { 
-                logs = getLocalLogs().map(l => ({...l, isCloud: false, dateStr: new Date(l.timestamp || Date.now()).toLocaleString('id-ID')})); 
-            }
-            
-            if (!logs.length) return ui.logs.innerHTML = `<div style="text-align:center; color:var(--subtext); font-size:12px; padding:12px;">Belum ada riwayat kerja.</div>`;
-            
-            logs.forEach(l => {
-                const doc = l.docLink ? `<a href="${l.docLink.startsWith('http') ? l.docLink : 'https://'+l.docLink}" target="_blank" class="log-doc">Link Dokumen</a>` : '';
-                ui.logs.innerHTML += `
-                    <div class="log-item">
-                        <div class="log-header"><span>${l.dateStr}</span><div style="display:flex;gap:6px;align-items:center"><span class="log-duration">${l.durationFormatted || '00:00:00'}</span><span class="badge-cloud ${l.isCloud?'':'badge-local'}">${l.isCloud?'Cloud':'Lokal'}</span></div></div>
-                        <div style="font-weight:600;color:var(--fg-text);">${l.taskDescription || 'Tanpa deskripsi'}</div>${doc}
-                    </div>`;
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-gray-50 hover:bg-green-50/50 transition-colors duration-200 group";
+                    tr.innerHTML = `
+                        <td class="py-3.5 px-4 text-center font-medium text-gray-400 group-hover:text-brand-green transition-colors">${index + 1}</td>
+                        <td class="py-3.5 px-4 font-semibold text-gray-800 break-words">${data.nama}</td>
+                        <td class="py-3.5 px-4 text-gray-600">${data.kelas}</td>
+                        <td class="py-3.5 px-4 text-center">
+                            <span class="inline-block bg-gray-100 group-hover:bg-green-100 group-hover:text-brand-green text-gray-700 font-bold px-3 py-1 rounded-lg transition-colors">${qty}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-gray-500 italic break-words text-sm">${data.catatan || '-'}</td>
+                        <td class="py-3.5 px-4 text-center">
+                            <button onclick="window.triggerDeleteOrder('${orderId}', '${data.nama.replace(/'/g, "\\'")}')" title="Hapus Pesanan" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+                    orderListEl.appendChild(tr);
+                });
+                totalEl.innerText = totalPesanan.toLocaleString('id-ID');
+            }, (error) => {
+                console.error("Gagal load pesanan:", error);
+                orderListEl.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500 text-sm">Gagal memuat: ${error.message}</td></tr>`;
             });
         }
 
-        ui.stopBtn.onclick = async () => {
-            initAudio(); isRunning = false; if(countdownInterval) clearInterval(countdownInterval); if(alarmInterval) clearInterval(alarmInterval);
-            const sec = workStartTime ? Math.max(0, Math.floor((Date.now() - workStartTime)/1000)) : 0;
-            const form = `<div style="display:flex;flex-direction:column;gap:10px;"><div><strong>Durasi Kerja:</strong> ${formatSec(sec)}</div>
-                <div class="form-group"><label>Apa yang dikerjakan?</label><textarea id="m-task" class="textarea-field"></textarea></div>
-                <div class="form-group"><label>Link Dokumen (Opsional)</label><input type="url" id="m-doc" class="input-field"></div></div>`;
-            
-            await showCustomModal("Simpan Riwayat", form, [
-                { text: 'Simpan', class: 'modal-btn-green', value: async () => {
-                    const d = { userId: currentUser?.uid, durationFormatted: formatSec(sec), secondsWorked: sec, taskDescription: document.getElementById('m-task').value.trim(), docLink: document.getElementById('m-doc').value.trim() };
-                    if(currentUser) { d.createdAt = serverTimestamp(); await addDoc(collection(db, "work_logs"), d); }
-                    else { d.timestamp = new Date().toISOString(); const ls = getLocalLogs(); ls.unshift(d); localStorage.setItem('flowguard_logs', JSON.stringify(ls)); }
-                    renderLogs();
-                }},
-                { text: 'Buang', class: 'modal-btn-secondary', value: ()=>false }
-            ]);
-            ui.lblStatus.textContent = "Sesi dihentikan."; ui.lblSys.textContent = ""; ui.lblBack.textContent = ""; setUILock(false);
-        };
+        // SIMPAN PRODUK
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitProduct');
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
+            btn.disabled = true;
 
-        async function processSession(w, b, bTxt) {
-            let hour = 1;
-            while(isRunning) {
-                ui.lblStatus.textContent = `===== Information =====\nHour #${hour} | Started: ${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}\n=====================`;
-                if(new Date().getHours() < 5) if(await showCustomModal("Warning", "Past midnight. Sleep?", [{text:'OK (Shutdown)', value:()=>'Y', class:'modal-btn-primary'}, {text:'No', value:()=>'N', class:'modal-btn-secondary'}]) === 'Y') return (isRunning = false, setUILock(false));
-                
-                await startCountdown(w); if(!isRunning) break;
-                await showAlert(w >= 3600 ? "One hour has passed..." : "Work time has passed..."); if(!isRunning) break;
-                
-                while(isRunning) {
-                    if(await showCustomModal("Hydration", "Have you drank water?", [{text:'Yes', value:()=>'Y', class:'modal-btn-green'},{text:'Not yet', value:()=>'N', class:'modal-btn-secondary'}]) === 'Y') {
-                        ui.lblSys.textContent = "SYSTEM : Good, hydrated."; ui.lblSys.className = "sys-log green"; break;
-                    }
-                    await showAlert("I will wait 5 minutes."); if(!isRunning) break; await startCountdown(300);
+            try {
+                const name = document.getElementById('productNameInput').value;
+                const file = document.getElementById('productImageInput').files[0];
+                let imageUrl = "";
+
+                if (file) {
+                    try {
+                        const storageRef = ref(storage, 'products/' + Date.now() + '_' + file.name);
+                        const uploadPromise = uploadBytes(storageRef, file);
+                        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 6000));
+                        const snapshot_storage = await Promise.race([uploadPromise, timeoutPromise]);
+                        imageUrl = await getDownloadURL(snapshot_storage.ref);
+                    } catch (err) { console.warn("Upload gambar dilewati."); }
                 }
-                if(!isRunning) break;
 
-                if(b > 0) {
-                    await showAlert(`Time to break for ${bTxt}..`); if(!isRunning) break;
-                    ui.lblSys.textContent = `SYSTEM : Resting ${bTxt}..`; ui.lblSys.className = "sys-log yellow";
-                    const ret = new Date(Date.now() + b*1000);
-                    ui.lblBack.textContent = `SYSTEM : Back at ${ret.getHours().toString().padStart(2,'0')}:${ret.getMinutes().toString().padStart(2,'0')}`;
-                    await startCountdown(b); if(!isRunning) break;
-                    await showAlert("Break is over, back to work boss!"); ui.lblBack.textContent = "";
-                }
-                ui.lblSys.textContent = "SYSTEM : Back to work boss!"; ui.lblSys.className = "sys-log green"; hour++;
+                await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp() });
+                
+                closeModal('productModal');
+                document.getElementById('productForm').reset();
+                document.getElementById('productImageLabel').innerHTML = "Upload Foto Produk";
+            } catch (error) {
+                alert("Gagal menyimpan produk: " + error.message);
+            } finally {
+                btn.innerHTML = "Simpan Produk";
+                btn.disabled = false;
             }
-        }
+        });
 
-        const run = (w, b, txt) => { initAudio(); isRunning = true; workStartTime = Date.now(); setUILock(true); processSession(w, b, txt); };
-        ui.preset1.onclick = () => run(3600, 1800, "30 minutes");
-        ui.preset2.onclick = () => run(3600, 0, "0 minutes");
-        ui.customBtn.onclick = () => {
-            const h = parseFloat(ui.hourInput.value), b = parseFloat(ui.breakInput.value || 0);
-            if(!h || h<=0 || h>24 || b<0 || b>24) return showAlert("Input tidak valid. Max 24 jam.");
-            run(Math.round(h*3600), Math.round(b*3600), b>=1 ? `${b} jam` : `${b*60} menit`);
-        };
+        // SIMPAN PESANAN
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentProductId) return;
 
-        renderLogs();
+            const btn = document.getElementById('btnSubmitOrder');
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "orders"), {
+                    productId: currentProductId,
+                    nama: document.getElementById('orderNama').value,
+                    kelas: document.getElementById('orderKelas').value,
+                    jumlah: Number(document.getElementById('orderJumlah').value),
+                    catatan: document.getElementById('orderCatatan').value,
+                    createdAt: serverTimestamp()
+                });
+                closeModal('orderModal');
+                document.getElementById('orderForm').reset();
+            } catch (error) {
+                alert("Gagal menyimpan pesanan: " + error.message);
+            } finally {
+                btn.innerHTML = "Tambahkan Pesanan";
+                btn.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
