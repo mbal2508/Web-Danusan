@@ -4,224 +4,339 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Danusan</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
                         'brand-green': '#1f5f3e',
-                        'brand-white': '#fcfcf7',
-                        'brand-dark': '#2d3748'
+                        'brand-dark-green': '#133a25',
+                        'brand-white': '#f8fafc',
+                        'brand-dark': '#1e293b'
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(31, 95, 62, 0.3)',
                     }
                 }
             }
         }
     </script>
     <style>
+        /* Custom Scrollbar Modern */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Glassmorphism & Smooth Animations */
+        .glass-panel { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); }
+        .sidebar-transition { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease; }
+        .content-fade { transition: opacity 0.3s ease, transform 0.3s ease; }
+        
+        /* Hide scrollbar completely but allow scrolling (Optional for sidebar) */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-brand-white text-brand-dark h-screen w-screen overflow-hidden flex flex-col md:flex-row font-sans">
+<body class="bg-brand-white text-brand-dark h-screen w-screen overflow-hidden flex flex-col md:flex-row antialiased selection:bg-brand-green selection:text-white">
 
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="relative w-full md:w-1/4 lg:w-1/5 bg-brand-green text-white p-4 md:p-6 shadow-xl z-20 flex flex-col transition-all duration-300 shrink-0">
+    <!-- Diberi lebar spesifik w-72 (288px) untuk desktop, transisi halus -->
+    <aside id="sidebar" class="sidebar-transition relative w-full md:w-72 bg-gradient-to-b from-brand-green to-brand-dark-green text-white p-4 md:p-6 shadow-2xl z-20 flex flex-col shrink-0 md:rounded-r-2xl overflow-visible">
         
-        <!-- TOMBOL PANAH -->
-        <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="absolute top-4 right-4 md:top-5 md:right-5 text-3xl font-bold hover:text-gray-300 transition focus:outline-none z-50 leading-none" title="Toggle Sidebar">
-            <span class="hidden md:inline">&laquo;</span>
-            <span class="inline md:hidden">&equiv;</span>
+        <!-- TOMBOL PANAH TOGGLE -->
+        <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="absolute top-5 right-5 md:-right-4 bg-white text-brand-green border border-gray-200 rounded-full p-1.5 shadow-md hover:shadow-glow hover:scale-110 transition-all duration-300 focus:outline-none z-50">
+            <svg id="toggleIcon" class="w-5 h-5 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
         </button>
 
         <!-- Logo -->
-        <div class="flex items-center justify-center mb-2 md:mb-8 mt-2 md:mt-0 h-10 md:h-12 w-full shrink-0">
-            <h1 id="sidebarLogo" class="text-3xl md:text-5xl font-light italic text-center transition-all duration-300">3</h1>
+        <div id="logoContainer" class="flex items-center justify-center mb-6 mt-2 md:mt-0 h-12 w-full shrink-0 content-fade origin-left">
+            <div class="bg-white/10 p-3 rounded-xl backdrop-blur-sm border border-white/20 shadow-inner">
+                <h1 class="text-3xl font-bold italic tracking-wider text-white">3</h1>
+            </div>
         </div>
         
-        <!-- Konten Sidebar -->
-        <div id="sidebarContent" class="sidebar-content flex-1 flex flex-col min-h-0 overflow-hidden transition-all duration-300">
-            <h2 class="text-lg md:text-xl font-semibold mb-3 border-b border-green-700 pb-2 shrink-0">Nama Produk:</h2>
+        <!-- Konten Sidebar (Daftar Produk) -->
+        <div id="sidebarContent" class="flex-1 flex flex-col min-h-0 content-fade origin-top-left w-full">
+            <h2 class="text-sm font-semibold mb-3 text-green-100 uppercase tracking-wider shrink-0 opacity-80">Daftar Produk</h2>
             
             <!-- List Produk -->
-            <ul id="productList" class="max-h-48 md:max-h-none flex-1 overflow-y-auto space-y-2 mb-4 pr-1 min-h-0">
-                <li class="text-center text-green-300 italic text-sm mt-4">Memuat produk...</li>
+            <ul id="productList" class="max-h-48 md:max-h-none flex-1 overflow-y-auto space-y-1.5 mb-4 pr-1 no-scrollbar min-h-0 w-full">
+                <li class="text-center text-green-300/80 italic text-sm mt-4">Memuat produk...</li>
             </ul>
 
             <!-- Tombol Tambah Produk -->
-            <button onclick="openModal('productModal')" class="mt-auto shrink-0 w-full py-2.5 md:py-3 bg-white text-brand-green text-sm md:text-base font-bold rounded-lg shadow hover:bg-gray-100 transition duration-200">
-                + Tambahkan Produk Baru
+            <button onclick="openModal('productModal')" class="mt-auto shrink-0 w-full py-2.5 bg-white/10 hover:bg-white text-white hover:text-brand-green border border-white/30 text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2 group">
+                <svg class="w-4 h-4 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span class="whitespace-nowrap">Tambah Produk</span>
             </button>
         </div>
     </aside>
 
     <!-- MAIN CONTENT -->
-    <!-- Diberi overflow-hidden agar seluruh page tidak bisa discroll, scroll hanya pada tabel -->
-    <main class="w-full md:w-3/4 lg:w-4/5 flex-1 h-full flex flex-col p-4 md:p-10 relative overflow-hidden justify-between min-h-0">
+    <main class="w-full flex-1 h-full flex flex-col p-4 md:p-8 lg:p-10 relative overflow-hidden justify-between min-h-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNlMmU4ZjAiIGZpbGwtb3BhY2l0eT0iMC40Ii8+PC9zdmc+')]">
         
-        <!-- CONTENT AREA -->
-        <div class="flex-1 flex flex-col min-h-0">
+        <div class="flex-1 flex flex-col min-h-0 max-w-6xl w-full mx-auto relative z-10">
             
-            <!-- EMPTY STATE -->
-            <div id="emptyState" class="my-auto py-12 flex flex-col items-center justify-center text-center">
-                <div class="bg-gray-200/60 p-5 md:p-6 rounded-full mb-4">
-                    <svg class="w-12 h-12 md:w-16 md:h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            <!-- EMPTY STATE (Modern Glassmorphism) -->
+            <div id="emptyState" class="m-auto flex flex-col items-center justify-center text-center glass-panel p-10 md:p-14 rounded-3xl shadow-soft transform transition-all duration-500">
+                <div class="bg-gradient-to-tr from-green-100 to-green-50 p-6 rounded-full mb-6 shadow-sm border border-green-200/50">
+                    <svg class="w-16 h-16 text-brand-green opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                     </svg>
                 </div>
-                <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-2">Pilih / buat produk Anda terlebih dahulu</h2>
-                <p class="text-sm md:text-base text-gray-500 max-w-md px-4">Klik salah satu produk di daftar sebelah atas/kiri untuk melihat daftar pesanan atau menambahkan pesanan baru.</p>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 tracking-tight">Belum Ada Produk Dipilih</h2>
+                <p class="text-gray-500 max-w-sm text-sm md:text-base leading-relaxed">Pilih produk di sidebar atau buat yang baru untuk mulai mengelola pesanan Danusan Anda.</p>
             </div>
 
             <!-- DASHBOARD UTAMA -->
-            <div id="mainDashboard" class="hidden h-full flex-col min-h-0">
+            <div id="mainDashboard" class="hidden h-full flex-col min-h-0 animate-[fadeIn_0.4s_ease-out]">
                 
-                <!-- Nama Produk (TETAP DIAM) -->
-                <h2 id="selectedProductName" class="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-gray-800 break-words shrink-0">(Nama Produk)</h2>
+                <!-- HEADER (Nama Produk) -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 shrink-0 gap-4">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-brand-green mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span> Produk Aktif
+                        </span>
+                        <h2 id="selectedProductName" class="text-3xl md:text-4xl font-bold text-gray-900 break-words tracking-tight">(Nama Produk)</h2>
+                    </div>
+                    
+                    <!-- KOTAK TOTAL PESANAN -->
+                    <div class="bg-white px-6 py-3 rounded-2xl shadow-soft border border-gray-100 flex items-center gap-4 shrink-0">
+                        <div class="p-2 bg-green-50 rounded-lg">
+                            <svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Pesanan</p>
+                            <p class="text-2xl font-bold text-gray-900 leading-none mt-1"><span id="totalPesanan">0</span></p>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- KOTAK TABEL PESANAN -->
-                <div class="bg-white border-2 md:border-4 border-gray-800 rounded-xl p-4 md:p-6 flex-1 flex flex-col shadow-lg mb-4 md:mb-6 overflow-hidden min-h-0">
-                    <h3 class="text-lg md:text-xl font-bold mb-3 border-b pb-2 shrink-0">Pesanan:</h3>
+                <div class="bg-white rounded-2xl flex-1 flex flex-col shadow-soft border border-gray-100 mb-5 overflow-hidden min-h-0 relative">
                     
-                    <!-- AREA SCROLL TABEL (BAGIAN INI YANG BISA BISA DISCROLL) -->
-                    <div class="overflow-auto flex-1 min-h-0 pr-1">
+                    <!-- Tombol Tambah Pesanan (Floating/Absolute) -->
+                    <button onclick="openModal('orderModal')" class="absolute top-4 right-4 bg-brand-dark hover:bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 z-20 group">
+                        <svg class="w-4 h-4 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                        <span class="hidden sm:inline">Pesanan Baru</span>
+                    </button>
+
+                    <h3 class="text-lg font-bold px-6 py-4 border-b border-gray-100 shrink-0 text-gray-800">Daftar Pesanan</h3>
+                    
+                    <!-- AREA SCROLL TABEL -->
+                    <div class="overflow-auto flex-1 min-h-0 px-2 pb-2">
                         <table class="w-full text-left border-collapse min-w-[550px]">
                             <thead class="sticky top-0 bg-white z-10">
-                                <tr class="text-gray-500 text-xs md:text-sm border-b">
-                                    <th class="py-2 w-12 text-center">No.</th>
-                                    <th class="py-2 w-1/4">Nama Siswa</th>
-                                    <th class="py-2 w-1/5">Kelas</th>
-                                    <th class="py-2 w-1/6 text-center">Jumlah</th>
-                                    <th class="py-2 w-1/3">Catatan</th>
+                                <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                                    <th class="py-3 px-4 w-12 text-center font-medium">No.</th>
+                                    <th class="py-3 px-4 w-1/4 font-medium">Nama Siswa</th>
+                                    <th class="py-3 px-4 w-1/5 font-medium">Kelas</th>
+                                    <th class="py-3 px-4 w-1/6 text-center font-medium">Jumlah</th>
+                                    <th class="py-3 px-4 w-1/3 font-medium">Catatan</th>
                                 </tr>
                             </thead>
-                            <tbody id="orderList" class="text-sm md:text-base">
-                                <tr><td colspan="5" class="text-center py-4 text-gray-400">Belum ada pesanan</td></tr>
+                            <tbody id="orderList" class="text-sm">
+                                <tr><td colspan="5" class="text-center py-8 text-gray-400">Belum ada pesanan masuk.</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- TOTAL & TOMBOL TAMBAH (TETAP DIAM) -->
-                <div class="flex flex-col items-center pb-2 shrink-0">
-                    <h3 class="text-xl md:text-2xl font-bold mb-3">Total Pesanan: <span id="totalPesanan" class="text-brand-green">0</span></h3>
-                    <button onclick="openModal('orderModal')" class="w-full sm:w-auto border-2 md:border-4 border-gray-800 text-gray-800 text-lg md:text-xl font-bold py-2.5 md:py-3 px-8 rounded-full hover:bg-gray-800 hover:text-white transition duration-300 shadow-md">
-                        + Tambahkan Pesanan
-                    </button>
-                </div>
             </div>
         </div>
 
-        <!-- COPYRIGHT FOOTER (TETAP DIAM DI BAWAH) -->
-        <footer class="pt-4 text-center text-xs md:text-sm text-gray-500 font-medium border-t border-gray-200 mt-2 shrink-0">
+        <!-- FOOTER -->
+        <footer class="pt-2 text-center text-xs md:text-sm text-gray-400 font-medium shrink-0 relative z-10">
             &copy; 2026 Jembar Muhammad Firdiana. All rights reserved.
         </footer>
     </main>
 
     <!-- MODAL TAMBAH PRODUK -->
-    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white border-2 md:border-4 border-gray-800 rounded-2xl w-full max-w-md md:max-w-lg p-5 md:p-6 relative shadow-2xl my-auto">
-            <button onclick="closeModal('productModal')" class="absolute top-3 right-4 text-3xl font-bold text-gray-600 hover:text-black">&times;</button>
-            <h2 class="text-xl md:text-2xl font-bold text-center mb-5">Tambahkan Produk</h2>
+    <div id="productModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <!-- Inner Modal dengan animasi scale -->
+        <div id="productModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
+            
+            <button onclick="closeModal('productModal')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Tambah Produk</h2>
             <form id="productForm">
-                <div class="mb-4">
-                    <label class="block font-bold mb-1 text-sm md:text-base">Nama Produk</label>
-                    <input type="text" id="productNameInput" required class="w-full border-2 border-gray-800 rounded-lg p-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-brand-green">
+                <div class="mb-5">
+                    <label class="block font-semibold mb-2 text-sm text-gray-700">Nama Produk</label>
+                    <input type="text" id="productNameInput" required placeholder="Contoh: Risol Mayo" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-all shadow-sm">
                 </div>
-                <div class="mb-6">
-                    <label class="block font-bold mb-1 text-sm md:text-base">Foto Produk (Opsional)</label>
-                    <div class="border-2 border-dashed border-gray-800 rounded-lg p-4 md:p-6 text-center cursor-pointer hover:bg-gray-50 relative">
-                        <input type="file" id="productImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        <span id="productImageLabel" class="font-bold text-sm md:text-base flex justify-center items-center gap-2">
-                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                            Upload Photo
-                        </span>
+                <div class="mb-8">
+                    <label class="block font-semibold mb-2 text-sm text-gray-700">Foto Produk (Opsional)</label>
+                    <div class="border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100 hover:border-brand-green transition-all relative group">
+                        <input type="file" id="productImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="flex flex-col items-center justify-center gap-2 text-gray-500 group-hover:text-brand-green">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span id="productImageLabel" class="font-medium text-sm">Upload Foto Produk</span>
+                        </div>
                     </div>
                 </div>
-                <button type="submit" id="btnSubmitProduct" class="w-full bg-brand-green text-white font-bold py-2.5 md:py-3 rounded-lg hover:bg-green-800 transition text-sm md:text-base">Simpan Produk</button>
+                <button type="submit" id="btnSubmitProduct" class="w-full bg-brand-dark hover:bg-gray-800 text-white font-semibold py-3.5 rounded-xl transition-colors shadow-md text-sm flex justify-center items-center gap-2">
+                    Simpan Produk
+                </button>
             </form>
         </div>
     </div>
 
     <!-- MODAL TAMBAH PESANAN -->
-    <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white border-2 md:border-4 border-gray-800 rounded-2xl w-full max-w-md md:max-w-lg p-5 md:p-6 relative shadow-2xl my-auto">
-            <button onclick="closeModal('orderModal')" class="absolute top-3 right-4 text-3xl font-bold text-gray-600 hover:text-black">&times;</button>
-            <h2 class="text-xl md:text-2xl font-bold text-center mb-5">Tambahkan Pesanan</h2>
-            <form id="orderForm" class="space-y-3 md:space-y-4 text-sm md:text-base">
-                <div class="flex flex-col sm:flex-row sm:items-center">
-                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Nama Siswa <span class="hidden sm:inline float-right">:</span></label>
-                    <input type="text" id="orderNama" placeholder="Contoh: Jembar Muhammad" required class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+    <div id="orderModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <div id="orderModalInner" class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
+            
+            <button onclick="closeModal('orderModal')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Input Pesanan Baru</h2>
+            <form id="orderForm" class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-semibold mb-1.5 text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="orderNama" placeholder="Contoh: Jembar Muhammad" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
                 </div>
-                <div class="flex flex-col sm:flex-row sm:items-center">
-                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Kelas <span class="hidden sm:inline float-right">:</span></label>
-                    <input type="text" id="orderKelas" placeholder="Contoh: XII.2" required class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+                <div class="flex gap-4">
+                    <div class="w-1/2">
+                        <label class="block font-semibold mb-1.5 text-gray-700">Kelas</label>
+                        <input type="text" id="orderKelas" placeholder="Contoh: XII.2" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block font-semibold mb-1.5 text-gray-700">Jumlah Pesanan</label>
+                        <input type="number" id="orderJumlah" placeholder="0" required min="1" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow text-center">
+                    </div>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:items-center">
-                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Jumlah <span class="hidden sm:inline float-right">:</span></label>
-                    <input type="number" id="orderJumlah" placeholder="Contoh: 100" required min="1" class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+                <div class="pb-2">
+                    <label class="block font-semibold mb-1.5 text-gray-700">Catatan (Opsional)</label>
+                    <input type="text" id="orderCatatan" placeholder="Contoh: Titip ke panitia classmeet" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
                 </div>
-                <div class="flex flex-col sm:flex-row sm:items-center mb-2">
-                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Catatan <span class="hidden sm:inline float-right">:</span></label>
-                    <input type="text" id="orderCatatan" placeholder="Contoh: Tanpa saos" class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
-                </div>
-                <button type="submit" id="btnSubmitOrder" class="w-full bg-brand-green text-white font-bold py-2.5 md:py-3 rounded-lg hover:bg-green-800 transition mt-4">Simpan Pesanan</button>
+                <button type="submit" id="btnSubmitOrder" class="w-full bg-brand-green hover:bg-green-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-md text-base mt-2">
+                    Tambahkan Pesanan
+                </button>
             </form>
         </div>
     </div>
 
     <!-- UI Scripts -->
     <script>
+        // Animasi CSS untuk render awal dashboard
+        document.head.insertAdjacentHTML('beforeend', '<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }</style>');
+
         let isSidebarMinimized = false;
         
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const toggleBtn = document.getElementById('toggleSidebarBtn');
             const sidebarContent = document.getElementById('sidebarContent');
-            const sidebarLogo = document.getElementById('sidebarLogo');
+            const logoContainer = document.getElementById('logoContainer');
+            const toggleIcon = document.getElementById('toggleIcon');
             const isMobile = window.innerWidth < 768;
 
             isSidebarMinimized = !isSidebarMinimized;
 
             if (isMobile) {
-                sidebarContent.classList.toggle('hidden');
-            } else {
+                // Logic Mobile
                 if (isSidebarMinimized) {
-                    sidebar.classList.remove('md:w-1/4', 'lg:w-1/5', 'p-6'); 
-                    sidebar.classList.add('md:w-20', 'p-3');
-                    toggleBtn.querySelector('span.hidden.md\\:inline').innerHTML = '&raquo;';
-                    sidebarContent.classList.add('hidden');
-                    sidebarLogo.classList.add('hidden');
+                    sidebarContent.style.display = 'none';
+                    logoContainer.style.display = 'none';
+                    toggleIcon.style.transform = 'rotate(90deg)';
                 } else {
-                    sidebar.classList.remove('md:w-20', 'p-3'); 
-                    sidebar.classList.add('md:w-1/4', 'lg:w-1/5', 'p-6');
-                    toggleBtn.querySelector('span.hidden.md\\:inline').innerHTML = '&laquo;';
-                    sidebarContent.classList.remove('hidden');
-                    sidebarLogo.classList.remove('hidden');
+                    sidebarContent.style.display = 'flex';
+                    logoContainer.style.display = 'flex';
+                    toggleIcon.style.transform = 'rotate(-90deg)';
+                }
+            } else {
+                // Logic Desktop dengan Smooth Width Transition
+                if (isSidebarMinimized) {
+                    // Animasi Menyusut (Minimize)
+                    sidebarContent.classList.add('opacity-0', 'scale-95');
+                    logoContainer.classList.add('opacity-0', 'scale-95');
+                    
+                    // Tunggu sedikit sebelum mengubah width agar text sempat memudar
+                    setTimeout(() => {
+                        sidebarContent.classList.add('hidden');
+                        logoContainer.classList.add('hidden');
+                        
+                        sidebar.classList.remove('md:w-72', 'md:p-6'); 
+                        sidebar.classList.add('md:w-20', 'md:p-3');
+                        
+                        toggleIcon.classList.add('rotate-180');
+                    }, 150);
+                    
+                } else {
+                    // Animasi Melebar (Maximize)
+                    sidebar.classList.remove('md:w-20', 'md:p-3'); 
+                    sidebar.classList.add('md:w-72', 'md:p-6');
+                    toggleIcon.classList.remove('rotate-180');
+                    
+                    // Munculkan display block setelah width mengembang, lalu fade in
+                    setTimeout(() => {
+                        sidebarContent.classList.remove('hidden');
+                        logoContainer.classList.remove('hidden');
+                        
+                        // Force reflow agar animasi CSS jalan
+                        void sidebarContent.offsetWidth; 
+                        
+                        sidebarContent.classList.remove('opacity-0', 'scale-95');
+                        logoContainer.classList.remove('opacity-0', 'scale-95');
+                    }, 350);
                 }
             }
         }
 
+        // FUNGSI BUKA/TUTUP MODAL DENGAN ANIMASI HALUS
         function openModal(id) {
-            const modal = document.getElementById(id); 
+            const modal = document.getElementById(id);
+            const inner = document.getElementById(id + 'Inner');
+            
             modal.classList.remove('hidden'); 
             modal.classList.add('flex');
-        }
-        function closeModal(id) {
-            const modal = document.getElementById(id); 
-            modal.classList.add('hidden'); 
-            modal.classList.remove('flex');
+            
+            // Trigger reflow
+            void modal.offsetWidth; 
+            
+            modal.classList.remove('opacity-0');
+            inner.classList.remove('scale-95');
+            inner.classList.add('scale-100');
         }
 
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const inner = document.getElementById(id + 'Inner');
+            
+            modal.classList.add('opacity-0');
+            inner.classList.remove('scale-100');
+            inner.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex');
+            }, 300); // Sesuai dengan durasi transisi
+        }
+
+        // Update Text File Input
         document.getElementById('productImageInput').addEventListener('change', function(e) {
-            document.getElementById('productImageLabel').innerHTML = e.target.files[0]?.name || "Upload Photo";
+            const fileName = e.target.files[0]?.name;
+            document.getElementById('productImageLabel').innerHTML = fileName ? 
+                `<span class="text-brand-green font-semibold truncate max-w-[200px] inline-block">${fileName}</span>` : 
+                "Upload Foto Produk";
         });
     </script>
 
-    <!-- FIREBASE MODULE -->
+    <!-- FIREBASE MODULE (Tetap Sama, Logic Tidak Diubah) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -250,7 +365,7 @@
         onSnapshot(qProducts, (snapshot) => {
             productListEl.innerHTML = '';
             if (snapshot.empty) {
-                productListEl.innerHTML = '<li class="text-center text-green-200 italic text-sm mt-2">Belum ada produk</li>';
+                productListEl.innerHTML = '<li class="text-center text-green-200/60 text-sm mt-4">Belum ada produk</li>';
                 return;
             }
 
@@ -266,20 +381,21 @@
                 const isSelected = currentProductId === productId;
 
                 const li = document.createElement('li');
-                li.className = `flex items-center justify-between p-2.5 md:p-3 rounded-lg text-sm md:text-base font-medium transition ${isSelected ? 'bg-white text-brand-green font-bold shadow' : 'hover:bg-green-700 text-white'}`;
+                // Styling modern list item
+                li.className = `group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${isSelected ? 'bg-white text-brand-green shadow-sm' : 'hover:bg-white/10 text-white'}`;
+                li.onclick = () => selectProduct(productId, data.name);
                 
                 // Text Nama Produk
                 const nameSpan = document.createElement('span');
-                nameSpan.className = "cursor-pointer flex-1 truncate pr-2";
-                nameSpan.innerText = `• ${data.name}`;
-                nameSpan.onclick = () => selectProduct(productId, data.name);
+                nameSpan.className = `flex-1 truncate pr-2 ${isSelected ? 'font-bold' : ''}`;
+                nameSpan.innerText = data.name;
 
-                // Tombol Hapus
+                // Tombol Hapus (Muncul samar, lebih jelas saat di-hover)
                 const deleteBtn = document.createElement('button');
                 deleteBtn.title = "Hapus Produk";
-                deleteBtn.className = `p-1 rounded transition hover:opacity-100 shrink-0 ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-green-300 hover:text-red-300 hover:bg-green-800'}`;
+                deleteBtn.className = `p-1.5 rounded-lg transition-colors shrink-0 ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
                 deleteBtn.innerHTML = `
-                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
                 `;
@@ -294,20 +410,19 @@
             });
         }, (error) => {
             console.error("Gagal load produk:", error);
-            productListEl.innerHTML = `<li class="text-center text-red-200 text-xs mt-2 bg-red-900/50 p-2 rounded">Gagal memuat produk: ${error.message}</li>`;
+            productListEl.innerHTML = `<li class="text-center text-red-200 text-xs mt-2 bg-red-900/50 p-2 rounded">Error: ${error.message}</li>`;
         });
 
-        // FUNGSI HAPUS PRODUK
+        // HAPUS PRODUK
         async function deleteProduct(productId, productName) {
-            if (confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
+            if (confirm(`Apakah Anda yakin ingin menghapus produk "${productName}" secara permanen?`)) {
                 try {
                     await deleteDoc(doc(db, "products", productId));
-                    
                     if (currentProductId === productId) {
                         currentProductId = null;
                         document.getElementById('mainDashboard').classList.add('hidden');
                         document.getElementById('mainDashboard').classList.remove('flex');
-                        document.getElementById('emptyState').classList.remove('hidden');
+                        document.getElementById('emptyState').classList.remove('opacity-0', 'hidden');
                     }
                 } catch (error) {
                     console.error("Gagal menghapus produk:", error);
@@ -316,34 +431,37 @@
             }
         }
 
-        // KETIKA PRODUK DIKLIK
+        // PILIH PRODUK
         function selectProduct(id, name) {
             currentProductId = id;
+            
+            // Sembunyikan empty state, munculkan dashboard
             document.getElementById('emptyState').classList.add('hidden');
             document.getElementById('mainDashboard').classList.remove('hidden');
             document.getElementById('mainDashboard').classList.add('flex');
             document.getElementById('selectedProductName').innerText = name;
 
             if (window.innerWidth < 768) {
-                document.getElementById('sidebarContent').classList.add('hidden');
+                toggleSidebar(); // Otomatis tutup sidebar di mobile jika diklik
             }
 
+            // Update Class List Manual agar UI langsung bereaksi tanpa tunggu fetch
             const listItems = productListEl.children;
             for(let li of listItems) {
                 const span = li.querySelector('span');
                 const btn = li.querySelector('button');
-                if(span && span.innerText.includes(name)) {
-                    li.className = 'flex items-center justify-between p-2.5 md:p-3 rounded-lg text-sm md:text-base font-bold transition bg-white text-brand-green shadow';
-                    if(btn) btn.className = 'p-1 rounded transition hover:opacity-100 shrink-0 text-red-500 hover:bg-red-50';
+                if(span && span.innerText === name) {
+                    li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-bold transition-all cursor-pointer bg-white text-brand-green shadow-sm';
+                    if(btn) btn.className = 'p-1.5 rounded-lg transition-colors shrink-0 text-red-500 hover:bg-red-50';
                 } else if(span) {
-                    li.className = 'flex items-center justify-between p-2.5 md:p-3 rounded-lg text-sm md:text-base font-medium transition hover:bg-green-700 text-white';
-                    if(btn) btn.className = 'p-1 rounded transition hover:opacity-100 shrink-0 text-green-300 hover:text-red-300 hover:bg-green-800';
+                    li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
+                    if(btn) btn.className = 'p-1.5 rounded-lg transition-colors shrink-0 text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100';
                 }
             }
             loadOrders(id);
         }
 
-        // BACA PESANAN & TAMBAHKAN NOMOR URUT
+        // BACA PESANAN
         function loadOrders(productId) {
             const orderListEl = document.getElementById('orderList');
             const totalEl = document.getElementById('totalPesanan');
@@ -357,7 +475,7 @@
                 let totalPesanan = 0;
 
                 if (snapshot.empty) {
-                    orderListEl.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada pesanan untuk produk ini</td></tr>';
+                    orderListEl.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-gray-400">Belum ada pesanan masuk untuk produk ini.</td></tr>';
                     totalEl.innerText = '0';
                     return;
                 }
@@ -374,20 +492,22 @@
                     totalPesanan += qty;
 
                     const tr = document.createElement('tr');
-                    tr.className = "border-b hover:bg-gray-50 transition";
+                    tr.className = "border-b border-gray-50 hover:bg-green-50/50 transition-colors duration-200 group";
                     tr.innerHTML = `
-                        <td class="py-2.5 md:py-3 text-center font-medium text-gray-500">${index + 1}</td>
-                        <td class="py-2.5 md:py-3 font-semibold break-words">${data.nama}</td>
-                        <td class="py-2.5 md:py-3">${data.kelas}</td>
-                        <td class="py-2.5 md:py-3 text-center font-bold">${qty}</td>
-                        <td class="py-2.5 md:py-3 text-gray-600 italic break-words">${data.catatan || '-'}</td>
+                        <td class="py-3.5 px-4 text-center font-medium text-gray-400 group-hover:text-brand-green transition-colors">${index + 1}</td>
+                        <td class="py-3.5 px-4 font-semibold text-gray-800 break-words">${data.nama}</td>
+                        <td class="py-3.5 px-4 text-gray-600">${data.kelas}</td>
+                        <td class="py-3.5 px-4 text-center">
+                            <span class="inline-block bg-gray-100 group-hover:bg-green-100 group-hover:text-brand-green text-gray-700 font-bold px-3 py-1 rounded-lg transition-colors">${qty}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-gray-500 italic break-words text-sm">${data.catatan || '-'}</td>
                     `;
                     orderListEl.appendChild(tr);
                 });
                 totalEl.innerText = totalPesanan.toLocaleString('id-ID');
             }, (error) => {
                 console.error("Gagal load pesanan:", error);
-                orderListEl.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 text-xs">Error: ${error.message}</td></tr>`;
+                orderListEl.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 text-sm">Gagal memuat: ${error.message}</td></tr>`;
             });
         }
 
@@ -395,7 +515,7 @@
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitProduct');
-            btn.innerText = "Menyimpan...";
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
             btn.disabled = true;
 
             try {
@@ -407,31 +527,21 @@
                     try {
                         const storageRef = ref(storage, 'products/' + Date.now() + '_' + file.name);
                         const uploadPromise = uploadBytes(storageRef, file);
-                        const timeoutPromise = new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error("Storage Timeout. Gambar dilewati.")), 6000)
-                        );
-                        
+                        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 6000));
                         const snapshot_storage = await Promise.race([uploadPromise, timeoutPromise]);
                         imageUrl = await getDownloadURL(snapshot_storage.ref);
-                    } catch (storageError) {
-                        console.warn("Upload gambar dilewati:", storageError);
-                    }
+                    } catch (err) { console.warn("Upload gambar dilewati."); }
                 }
 
-                await addDoc(collection(db, "products"), {
-                    name: name,
-                    imageUrl: imageUrl,
-                    createdAt: serverTimestamp()
-                });
-
+                await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp() });
+                
                 closeModal('productModal');
                 document.getElementById('productForm').reset();
-                document.getElementById('productImageLabel').innerHTML = "Upload Photo";
+                document.getElementById('productImageLabel').innerHTML = "Upload Foto Produk";
             } catch (error) {
-                console.error("Gagal menyimpan produk:", error);
                 alert("Gagal menyimpan produk: " + error.message);
             } finally {
-                btn.innerText = "Simpan Produk";
+                btn.innerHTML = "Simpan Produk";
                 btn.disabled = false;
             }
         });
@@ -442,7 +552,7 @@
             if(!currentProductId) return;
 
             const btn = document.getElementById('btnSubmitOrder');
-            btn.innerText = "Menyimpan...";
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
             btn.disabled = true;
 
             try {
@@ -457,10 +567,9 @@
                 closeModal('orderModal');
                 document.getElementById('orderForm').reset();
             } catch (error) {
-                console.error("Gagal menyimpan pesanan:", error);
                 alert("Gagal menyimpan pesanan: " + error.message);
             } finally {
-                btn.innerText = "Simpan Pesanan";
+                btn.innerHTML = "Tambahkan Pesanan";
                 btn.disabled = false;
             }
         });
