@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Danusan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-green': '#1f5f3e',
+                        'brand-white': '#fcfcf7',
+                        'brand-dark': '#2d3748'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-brand-white text-brand-dark h-screen w-screen overflow-hidden flex flex-col md:flex-row font-sans">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="relative w-full md:w-1/4 lg:w-1/5 bg-brand-green text-white p-4 md:p-6 shadow-xl z-20 flex flex-col transition-all duration-300 shrink-0">
+        
+        <!-- TOMBOL PANAH -->
+        <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="absolute top-4 right-4 md:top-5 md:right-5 text-3xl font-bold hover:text-gray-300 transition focus:outline-none z-50 leading-none" title="Toggle Sidebar">
+            <span class="hidden md:inline">&laquo;</span>
+            <span class="inline md:hidden">&equiv;</span>
+        </button>
+
+        <!-- Logo -->
+        <div class="flex items-center justify-center mb-2 md:mb-8 mt-2 md:mt-0 h-10 md:h-12 w-full shrink-0">
+            <h1 id="sidebarLogo" class="text-3xl md:text-5xl font-light italic text-center transition-all duration-300">3</h1>
+        </div>
+        
+        <!-- Konten Sidebar -->
+        <div id="sidebarContent" class="sidebar-content flex-1 flex flex-col min-h-0 overflow-hidden transition-all duration-300">
+            <h2 class="text-lg md:text-xl font-semibold mb-3 border-b border-green-700 pb-2 shrink-0">Nama Produk:</h2>
+            
+            <!-- List Produk -->
+            <ul id="productList" class="max-h-48 md:max-h-none flex-1 overflow-y-auto space-y-2 mb-4 pr-1 min-h-0">
+                <li class="text-center text-green-300 italic text-sm mt-4">Memuat produk...</li>
+            </ul>
+
+            <!-- Tombol Tambah Produk -->
+            <button onclick="openModal('productModal')" class="mt-auto shrink-0 w-full py-2.5 md:py-3 bg-white text-brand-green text-sm md:text-base font-bold rounded-lg shadow hover:bg-gray-100 transition duration-200">
+                + Tambahkan Produk Baru
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <!-- Diberi overflow-hidden agar seluruh page tidak bisa discroll, scroll hanya pada tabel -->
+    <main class="w-full md:w-3/4 lg:w-4/5 flex-1 h-full flex flex-col p-4 md:p-10 relative overflow-hidden justify-between min-h-0">
+        
+        <!-- CONTENT AREA -->
+        <div class="flex-1 flex flex-col min-h-0">
+            
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="my-auto py-12 flex flex-col items-center justify-center text-center">
+                <div class="bg-gray-200/60 p-5 md:p-6 rounded-full mb-4">
+                    <svg class="w-12 h-12 md:w-16 md:h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-2">Pilih / buat produk Anda terlebih dahulu</h2>
+                <p class="text-sm md:text-base text-gray-500 max-w-md px-4">Klik salah satu produk di daftar sebelah atas/kiri untuk melihat daftar pesanan atau menambahkan pesanan baru.</p>
+            </div>
+
+            <!-- DASHBOARD UTAMA -->
+            <div id="mainDashboard" class="hidden h-full flex-col min-h-0">
+                
+                <!-- Nama Produk (TETAP DIAM) -->
+                <h2 id="selectedProductName" class="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-gray-800 break-words shrink-0">(Nama Produk)</h2>
+
+                <!-- KOTAK TABEL PESANAN -->
+                <div class="bg-white border-2 md:border-4 border-gray-800 rounded-xl p-4 md:p-6 flex-1 flex flex-col shadow-lg mb-4 md:mb-6 overflow-hidden min-h-0">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 border-b pb-2 shrink-0">Pesanan:</h3>
+                    
+                    <!-- AREA SCROLL TABEL (BAGIAN INI YANG BISA BISA DISCROLL) -->
+                    <div class="overflow-auto flex-1 min-h-0 pr-1">
+                        <table class="w-full text-left border-collapse min-w-[550px]">
+                            <thead class="sticky top-0 bg-white z-10">
+                                <tr class="text-gray-500 text-xs md:text-sm border-b">
+                                    <th class="py-2 w-12 text-center">No.</th>
+                                    <th class="py-2 w-1/4">Nama Siswa</th>
+                                    <th class="py-2 w-1/5">Kelas</th>
+                                    <th class="py-2 w-1/6 text-center">Jumlah</th>
+                                    <th class="py-2 w-1/3">Catatan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderList" class="text-sm md:text-base">
+                                <tr><td colspan="5" class="text-center py-4 text-gray-400">Belum ada pesanan</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TOTAL & TOMBOL TAMBAH (TETAP DIAM) -->
+                <div class="flex flex-col items-center pb-2 shrink-0">
+                    <h3 class="text-xl md:text-2xl font-bold mb-3">Total Pesanan: <span id="totalPesanan" class="text-brand-green">0</span></h3>
+                    <button onclick="openModal('orderModal')" class="w-full sm:w-auto border-2 md:border-4 border-gray-800 text-gray-800 text-lg md:text-xl font-bold py-2.5 md:py-3 px-8 rounded-full hover:bg-gray-800 hover:text-white transition duration-300 shadow-md">
+                        + Tambahkan Pesanan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COPYRIGHT FOOTER (TETAP DIAM DI BAWAH) -->
+        <footer class="pt-4 text-center text-xs md:text-sm text-gray-500 font-medium border-t border-gray-200 mt-2 shrink-0">
+            &copy; 2026 Jembar Muhammad Firdiana. All rights reserved.
+        </footer>
+    </main>
+
+    <!-- MODAL TAMBAH PRODUK -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white border-2 md:border-4 border-gray-800 rounded-2xl w-full max-w-md md:max-w-lg p-5 md:p-6 relative shadow-2xl my-auto">
+            <button onclick="closeModal('productModal')" class="absolute top-3 right-4 text-3xl font-bold text-gray-600 hover:text-black">&times;</button>
+            <h2 class="text-xl md:text-2xl font-bold text-center mb-5">Tambahkan Produk</h2>
+            <form id="productForm">
+                <div class="mb-4">
+                    <label class="block font-bold mb-1 text-sm md:text-base">Nama Produk</label>
+                    <input type="text" id="productNameInput" required class="w-full border-2 border-gray-800 rounded-lg p-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-brand-green">
+                </div>
+                <div class="mb-6">
+                    <label class="block font-bold mb-1 text-sm md:text-base">Foto Produk (Opsional)</label>
+                    <div class="border-2 border-dashed border-gray-800 rounded-lg p-4 md:p-6 text-center cursor-pointer hover:bg-gray-50 relative">
+                        <input type="file" id="productImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <span id="productImageLabel" class="font-bold text-sm md:text-base flex justify-center items-center gap-2">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            Upload Photo
+                        </span>
+                    </div>
+                </div>
+                <button type="submit" id="btnSubmitProduct" class="w-full bg-brand-green text-white font-bold py-2.5 md:py-3 rounded-lg hover:bg-green-800 transition text-sm md:text-base">Simpan Produk</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH PESANAN -->
+    <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white border-2 md:border-4 border-gray-800 rounded-2xl w-full max-w-md md:max-w-lg p-5 md:p-6 relative shadow-2xl my-auto">
+            <button onclick="closeModal('orderModal')" class="absolute top-3 right-4 text-3xl font-bold text-gray-600 hover:text-black">&times;</button>
+            <h2 class="text-xl md:text-2xl font-bold text-center mb-5">Tambahkan Pesanan</h2>
+            <form id="orderForm" class="space-y-3 md:space-y-4 text-sm md:text-base">
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Nama Siswa <span class="hidden sm:inline float-right">:</span></label>
+                    <input type="text" id="orderNama" placeholder="Contoh: Jembar Muhammad" required class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Kelas <span class="hidden sm:inline float-right">:</span></label>
+                    <input type="text" id="orderKelas" placeholder="Contoh: XII.2" required class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Jumlah <span class="hidden sm:inline float-right">:</span></label>
+                    <input type="number" id="orderJumlah" placeholder="Contoh: 100" required min="1" class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center mb-2">
+                    <label class="sm:w-1/3 font-bold mb-1 sm:mb-0">Catatan <span class="hidden sm:inline float-right">:</span></label>
+                    <input type="text" id="orderCatatan" placeholder="Contoh: Tanpa saos" class="sm:w-2/3 sm:ml-3 border-2 border-gray-800 rounded-lg p-2 focus:outline-none">
+                </div>
+                <button type="submit" id="btnSubmitOrder" class="w-full bg-brand-green text-white font-bold py-2.5 md:py-3 rounded-lg hover:bg-green-800 transition mt-4">Simpan Pesanan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- UI Scripts -->
+    <script>
+        let isSidebarMinimized = false;
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            const sidebarContent = document.getElementById('sidebarContent');
+            const sidebarLogo = document.getElementById('sidebarLogo');
+            const isMobile = window.innerWidth < 768;
+
+            isSidebarMinimized = !isSidebarMinimized;
+
+            if (isMobile) {
+                sidebarContent.classList.toggle('hidden');
+            } else {
+                if (isSidebarMinimized) {
+                    sidebar.classList.remove('md:w-1/4', 'lg:w-1/5', 'p-6'); 
+                    sidebar.classList.add('md:w-20', 'p-3');
+                    toggleBtn.querySelector('span.hidden.md\\:inline').innerHTML = '&raquo;';
+                    sidebarContent.classList.add('hidden');
+                    sidebarLogo.classList.add('hidden');
+                } else {
+                    sidebar.classList.remove('md:w-20', 'p-3'); 
+                    sidebar.classList.add('md:w-1/4', 'lg:w-1/5', 'p-6');
+                    toggleBtn.querySelector('span.hidden.md\\:inline').innerHTML = '&laquo;';
+                    sidebarContent.classList.remove('hidden');
+                    sidebarLogo.classList.remove('hidden');
+                }
+            }
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(id); 
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex');
+        }
+        function closeModal(id) {
+            const modal = document.getElementById(id); 
+            modal.classList.add('hidden'); 
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('productImageInput').addEventListener('change', function(e) {
+            document.getElementById('productImageLabel').innerHTML = e.target.files[0]?.name || "Upload Photo";
+        });
+    </script>
+
+    <!-- FIREBASE MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQQfViHcglTdOMBn-HGKcAIl05BPqEerI",
+            authDomain: "web-danusan-29a9d.firebaseapp.com",
+            projectId: "web-danusan-29a9d",
+            storageBucket: "web-danusan-29a9d.firebasestorage.app",
+            messagingSenderId: "355990822526",
+            appId: "1:355990822526:web:4767d88bcd22b1e7a3022f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        let currentProductId = null;
+        let unsubscribeOrders = null;
+
+        // BACA PRODUK
+        const productListEl = document.getElementById('productList');
+        const qProducts = collection(db, "products");
+        
+        onSnapshot(qProducts, (snapshot) => {
+            productListEl.innerHTML = '';
+            if (snapshot.empty) {
+                productListEl.innerHTML = '<li class="text-center text-green-200 italic text-sm mt-2">Belum ada produk</li>';
+                return;
+            }
+
+            const sortedProducts = snapshot.docs.sort((a, b) => {
+                const timeA = a.data().createdAt?.toMillis() || Date.now();
+                const timeB = b.data().createdAt?.toMillis() || Date.now();
+                return timeB - timeA;
+            });
+
+            sortedProducts.forEach((docSnap) => {
+                const data = docSnap.data();
+                const productId = docSnap.id;
+                const isSelected = currentProductId === productId;
+
+                const li = document.createElement('li');
+                li.className = `flex items-center justify-between p-2.5 md:p-3 rounded-lg text-sm md:text-base font-medium transition ${isSelected ? 'bg-white text-brand-green font-bold shadow' : 'hover:bg-green-700 text-white'}`;
+                
+                // Text Nama Produk
+                const nameSpan = document.createElement('span');
+                nameSpan.className = "cursor-pointer flex-1 truncate pr-2";
+                nameSpan.innerText = `• ${data.name}`;
+                nameSpan.onclick = () => selectProduct(productId, data.name);
+
+                // Tombol Hapus
+                const deleteBtn = document.createElement('button');
+                deleteBtn.title = "Hapus Produk";
+                deleteBtn.className = `p-1 rounded transition hover:opacity-100 shrink-0 ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-green-300 hover:text-red-300 hover:bg-green-800'}`;
+                deleteBtn.innerHTML = `
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                `;
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteProduct(productId, data.name);
+                };
+
+                li.appendChild(nameSpan);
+                li.appendChild(deleteBtn);
+                productListEl.appendChild(li);
+            });
+        }, (error) => {
+            console.error("Gagal load produk:", error);
+            productListEl.innerHTML = `<li class="text-center text-red-200 text-xs mt-2 bg-red-900/50 p-2 rounded">Gagal memuat produk: ${error.message}</li>`;
+        });
+
+        // FUNGSI HAPUS PRODUK
+        async function deleteProduct(productId, productName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
+                try {
+                    await deleteDoc(doc(db, "products", productId));
+                    
+                    if (currentProductId === productId) {
+                        currentProductId = null;
+                        document.getElementById('mainDashboard').classList.add('hidden');
+                        document.getElementById('mainDashboard').classList.remove('flex');
+                        document.getElementById('emptyState').classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error("Gagal menghapus produk:", error);
+                    alert("Gagal menghapus produk: " + error.message);
+                }
+            }
+        }
+
+        // KETIKA PRODUK DIKLIK
+        function selectProduct(id, name) {
+            currentProductId = id;
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            document.getElementById('mainDashboard').classList.add('flex');
+            document.getElementById('selectedProductName').innerText = name;
+
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebarContent').classList.add('hidden');
+            }
+
+            const listItems = productListEl.children;
+            for(let li of listItems) {
+                const span = li.querySelector('span');
+                const btn = li.querySelector('button');
+                if(span && span.innerText.includes(name)) {
+                    li.className = 'flex items-center justify-between p-2.5 md:p-3 rounded-lg text-sm md:text-base font-bold transition bg-white text-brand-green shadow';
+                    if(btn) btn.className = 'p-1 rounded transition hover:opacity-100 shrink-0 text-red-500 hover:bg-red-50';
+                } else if(span) {
+                    li.className = 'flex items-center justify-between p-2.5 md:p-3 rounded-lg text-sm md:text-base font-medium transition hover:bg-green-700 text-white';
+                    if(btn) btn.className = 'p-1 rounded transition hover:opacity-100 shrink-0 text-green-300 hover:text-red-300 hover:bg-green-800';
+                }
+            }
+            loadOrders(id);
+        }
+
+        // BACA PESANAN & TAMBAHKAN NOMOR URUT
+        function loadOrders(productId) {
+            const orderListEl = document.getElementById('orderList');
+            const totalEl = document.getElementById('totalPesanan');
+            
+            if(unsubscribeOrders) unsubscribeOrders();
+
+            const qOrders = query(collection(db, "orders"), where("productId", "==", productId));
+            
+            unsubscribeOrders = onSnapshot(qOrders, (snapshot) => {
+                orderListEl.innerHTML = '';
+                let totalPesanan = 0;
+
+                if (snapshot.empty) {
+                    orderListEl.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400 italic">Belum ada pesanan untuk produk ini</td></tr>';
+                    totalEl.innerText = '0';
+                    return;
+                }
+
+                const sortedDocs = snapshot.docs.sort((a, b) => {
+                    const timeA = a.data().createdAt?.toMillis() || Date.now();
+                    const timeB = b.data().createdAt?.toMillis() || Date.now();
+                    return timeB - timeA;
+                });
+
+                sortedDocs.forEach((docSnap, index) => {
+                    const data = docSnap.data();
+                    const qty = parseInt(data.jumlah) || 0;
+                    totalPesanan += qty;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b hover:bg-gray-50 transition";
+                    tr.innerHTML = `
+                        <td class="py-2.5 md:py-3 text-center font-medium text-gray-500">${index + 1}</td>
+                        <td class="py-2.5 md:py-3 font-semibold break-words">${data.nama}</td>
+                        <td class="py-2.5 md:py-3">${data.kelas}</td>
+                        <td class="py-2.5 md:py-3 text-center font-bold">${qty}</td>
+                        <td class="py-2.5 md:py-3 text-gray-600 italic break-words">${data.catatan || '-'}</td>
+                    `;
+                    orderListEl.appendChild(tr);
+                });
+                totalEl.innerText = totalPesanan.toLocaleString('id-ID');
+            }, (error) => {
+                console.error("Gagal load pesanan:", error);
+                orderListEl.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 text-xs">Error: ${error.message}</td></tr>`;
+            });
+        }
+
+        // SIMPAN PRODUK
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitProduct');
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            try {
+                const name = document.getElementById('productNameInput').value;
+                const file = document.getElementById('productImageInput').files[0];
+                let imageUrl = "";
+
+                if (file) {
+                    try {
+                        const storageRef = ref(storage, 'products/' + Date.now() + '_' + file.name);
+                        const uploadPromise = uploadBytes(storageRef, file);
+                        const timeoutPromise = new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error("Storage Timeout. Gambar dilewati.")), 6000)
+                        );
+                        
+                        const snapshot_storage = await Promise.race([uploadPromise, timeoutPromise]);
+                        imageUrl = await getDownloadURL(snapshot_storage.ref);
+                    } catch (storageError) {
+                        console.warn("Upload gambar dilewati:", storageError);
+                    }
+                }
+
+                await addDoc(collection(db, "products"), {
+                    name: name,
+                    imageUrl: imageUrl,
+                    createdAt: serverTimestamp()
+                });
+
+                closeModal('productModal');
+                document.getElementById('productForm').reset();
+                document.getElementById('productImageLabel').innerHTML = "Upload Photo";
+            } catch (error) {
+                console.error("Gagal menyimpan produk:", error);
+                alert("Gagal menyimpan produk: " + error.message);
+            } finally {
+                btn.innerText = "Simpan Produk";
+                btn.disabled = false;
+            }
+        });
+
+        // SIMPAN PESANAN
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentProductId) return;
+
+            const btn = document.getElementById('btnSubmitOrder');
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "orders"), {
+                    productId: currentProductId,
+                    nama: document.getElementById('orderNama').value,
+                    kelas: document.getElementById('orderKelas').value,
+                    jumlah: Number(document.getElementById('orderJumlah').value),
+                    catatan: document.getElementById('orderCatatan').value,
+                    createdAt: serverTimestamp()
+                });
+                closeModal('orderModal');
+                document.getElementById('orderForm').reset();
+            } catch (error) {
+                console.error("Gagal menyimpan pesanan:", error);
+                alert("Gagal menyimpan pesanan: " + error.message);
+            } finally {
+                btn.innerText = "Simpan Pesanan";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
