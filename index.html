@@ -83,7 +83,7 @@
             <h2 class="text-sm font-semibold mb-3 text-green-100 uppercase tracking-wider shrink-0 opacity-80">Daftar Produk</h2>
             
             <!-- List Produk -->
-            <ul id="productList" class="flex-1 overflow-y-auto space-y-1.5 mb-4 pr-1 no-scrollbar min-h-0 w-full">
+            <ul id="productList" class="flex-1 overflow-y-auto space-y-2 mb-4 pr-1 no-scrollbar min-h-0 w-full">
                 <li class="text-center text-green-300/80 italic text-sm mt-4">Memuat produk...</li>
             </ul>
 
@@ -415,7 +415,7 @@
             openModal('orderModal');
         }
 
-        // PERBAIKAN LOGIKA INPUT MODAL HAPUS
+        // LOGIKA INPUT MODAL HAPUS
         document.getElementById('deleteConfirmInput').addEventListener('input', function(e) {
             const btn = document.getElementById('btnExecuteDelete');
             const expectedName = (window.deleteExpectedName || "").trim();
@@ -522,7 +522,7 @@
             }
         });
 
-        // BACA PRODUK
+        // BACA PRODUK DAN RENDER DOM LIST
         const productListEl = document.getElementById('productList');
         const qProducts = collection(db, "products");
         
@@ -549,23 +549,36 @@
                     document.getElementById('selectedProductName').innerText = data.name;
                 }
 
+                // Membangun elemen List Item dengan struktur Relative dan Z-Index
                 const li = document.createElement('li');
-                li.className = `group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${isSelected ? 'bg-white text-brand-green shadow-sm' : 'hover:bg-white/10 text-white'}`;
+                li.className = `group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm transition-all cursor-pointer ${isSelected ? 'bg-white text-brand-green shadow-sm font-bold' : 'hover:bg-white/10 text-white font-medium'}`;
                 li.onclick = () => selectProduct(productId, data.name);
                 
+                // Elemen Background Image jika imageUrl tersedia
+                if (data.imageUrl) {
+                    const bgDiv = document.createElement('div');
+                    // Opacity 25% ketika dipilih agar teks dan tombol aksi tetap terbaca (putih), opacity 10% saat tidak dipilih (hijau)
+                    const opacityClass = isSelected ? 'opacity-25' : 'opacity-10 group-hover:opacity-20';
+                    bgDiv.className = `absolute inset-0 bg-cover bg-center transition-opacity duration-300 bg-img-layer ${opacityClass}`;
+                    bgDiv.style.backgroundImage = `url('${data.imageUrl}')`;
+                    li.appendChild(bgDiv);
+                }
+
+                // Elemen Teks Nama Produk (Z-index berada di atas background)
                 const nameSpan = document.createElement('span');
-                nameSpan.className = `flex-1 truncate pr-2 ${isSelected ? 'font-bold' : ''}`;
+                nameSpan.className = `relative z-10 flex-1 truncate pr-2 text-name`;
                 nameSpan.innerText = data.name;
 
+                // Elemen Kontainer Tombol Aksi (Z-index berada di atas background)
                 const actionDiv = document.createElement('div');
-                actionDiv.className = "flex items-center gap-1 shrink-0";
+                actionDiv.className = "relative z-10 flex items-center gap-1 shrink-0 action-btns";
 
                 // Tombol Edit Produk
                 const editBtn = document.createElement('button');
                 editBtn.title = "Edit Nama Produk";
                 editBtn.className = `p-1.5 rounded-lg transition-colors ${isSelected ? 'text-gray-500 hover:bg-gray-100 hover:text-brand-green' : 'text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
                 editBtn.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
                 `;
@@ -579,7 +592,7 @@
                 deleteBtn.title = "Hapus Produk";
                 deleteBtn.className = `p-1.5 rounded-lg transition-colors ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
                 deleteBtn.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
                 `;
@@ -599,7 +612,7 @@
             productListEl.innerHTML = `<li class="text-center text-red-200 text-xs mt-2 bg-red-900/50 p-2 rounded">Error: ${error.message}</li>`;
         });
 
-        // PILIH PRODUK
+        // FUNGSI MEMILIH PRODUK (Mengubah Class secara dinamis)
         function selectProduct(id, name) {
             currentProductId = id;
             
@@ -614,14 +627,21 @@
 
             const listItems = productListEl.children;
             for(let li of listItems) {
-                const span = li.querySelector('span');
-                const buttons = li.querySelectorAll('button');
+                const span = li.querySelector('.text-name');
+                const bgDiv = li.querySelector('.bg-img-layer');
+                const actionDiv = li.querySelector('.action-btns');
+                const buttons = actionDiv ? actionDiv.querySelectorAll('button') : [];
+                
                 if(span && span.innerText === name) {
-                    li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-bold transition-all cursor-pointer bg-white text-brand-green shadow-sm';
+                    // Update state Aktif / Dipilih (Warna Putih + Opacity Image 25%)
+                    li.className = 'group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm font-bold transition-all cursor-pointer bg-white text-brand-green shadow-sm';
+                    if (bgDiv) bgDiv.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-300 opacity-25 bg-img-layer';
                     if(buttons[0]) buttons[0].className = 'p-1.5 rounded-lg transition-colors text-gray-500 hover:bg-gray-100 hover:text-brand-green';
                     if(buttons[1]) buttons[1].className = 'p-1.5 rounded-lg transition-colors text-red-500 hover:bg-red-50';
                 } else if(span) {
-                    li.className = 'group flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
+                    // Update state Inaktif (Warna transparan Hijau + Opacity Image 10%)
+                    li.className = 'group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
+                    if (bgDiv) bgDiv.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-300 opacity-10 group-hover:opacity-20 bg-img-layer';
                     if(buttons[0]) buttons[0].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100';
                     if(buttons[1]) buttons[1].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100';
                 }
