@@ -74,7 +74,7 @@
         <!-- Logo Image Sekbid 3 -->
         <div id="logoContainer" class="flex items-center justify-center mb-6 mt-2 md:mt-0 h-14 w-full shrink-0 content-fade origin-left">
             <div class="bg-white/10 p-2 rounded-2xl backdrop-blur-sm border border-white/20 shadow-inner flex items-center justify-center">
-                <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="h-10 w-10 object-cover rounded-full shadow-sm" />
+                <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="h-10 w-10 object-cover rounded-full shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=S3&background=ffffff&color=1f5f3e'" />
             </div>
         </div>
         
@@ -106,7 +106,7 @@
                 </svg>
             </button>
             <div class="flex items-center gap-2.5">
-                <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="w-8 h-8 rounded-full object-cover shadow-sm border border-brand-green/20" />
+                <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="w-8 h-8 rounded-full object-cover shadow-sm border border-brand-green/20" onerror="this.src='https://ui-avatars.com/api/?name=S3&background=1f5f3e&color=fff'" />
                 <h1 class="text-base font-bold text-brand-green italic tracking-tight">Dashboard Danusan</h1>
             </div>
             <div class="w-10"></div>
@@ -114,7 +114,7 @@
 
         <!-- TOP BAR DESKTOP HEADER -->
         <div class="hidden md:flex items-center gap-3 mb-4 shrink-0">
-            <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="w-9 h-9 rounded-full object-cover shadow-sm border border-brand-green/20" />
+            <img src="logo_sekbid_3.png" alt="Logo Sekbid 3" class="w-9 h-9 rounded-full object-cover shadow-sm border border-brand-green/20" onerror="this.src='https://ui-avatars.com/api/?name=S3&background=1f5f3e&color=fff'" />
             <span class="text-xl font-bold tracking-tight text-brand-dark">Dashboard Sekbid 3</span>
         </div>
 
@@ -137,20 +137,28 @@
                 <!-- HEADER (Nama Produk) -->
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 shrink-0 gap-4">
                     <div>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-brand-green mb-2">
+                        <span id="productStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-brand-green mb-2 transition-all">
                             <span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span> Produk Aktif
                         </span>
                         <h2 id="selectedProductName" class="text-3xl md:text-4xl font-bold text-gray-900 break-words tracking-tight">(Nama Produk)</h2>
                     </div>
                     
-                    <!-- KOTAK TOTAL PESANAN -->
-                    <div class="bg-white px-6 py-3 rounded-2xl shadow-soft border border-gray-100 flex items-center gap-4 shrink-0">
-                        <div class="p-2 bg-green-50 rounded-lg">
-                            <svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Pesanan</p>
-                            <p class="text-2xl font-bold text-gray-900 leading-none mt-1"><span id="totalPesanan">0</span></p>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
+                        <!-- TOMBOL CLOSE PO -->
+                        <button id="btnClosePO" onclick="window.triggerClosePO()" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold py-3 px-5 rounded-2xl transition-all duration-300 shadow-soft hover:shadow-md flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Close PO
+                        </button>
+                        
+                        <!-- KOTAK TOTAL PESANAN -->
+                        <div class="bg-white px-6 py-3 rounded-2xl shadow-soft border border-gray-100 flex items-center gap-4">
+                            <div class="p-2 bg-green-50 rounded-lg">
+                                <svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Pesanan</p>
+                                <p class="text-2xl font-bold text-gray-900 leading-none mt-1"><span id="totalPesanan">0</span></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -159,7 +167,7 @@
                 <div class="bg-white rounded-2xl flex-1 flex flex-col shadow-soft border border-gray-100 mb-5 overflow-hidden min-h-0 relative">
                     
                     <!-- Tombol Tambah Pesanan -->
-                    <button onclick="openAddOrderModal()" class="absolute top-4 right-4 bg-brand-dark hover:bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 z-20 group">
+                    <button id="btnAddOrder" onclick="openAddOrderModal()" class="absolute top-4 right-4 bg-brand-dark hover:bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 z-20 group">
                         <svg class="w-4 h-4 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                         <span class="hidden sm:inline">Pesanan Baru</span>
                     </button>
@@ -168,19 +176,14 @@
                     
                     <!-- AREA SCROLL TABEL -->
                     <div class="overflow-auto flex-1 min-h-0 px-2 pb-2">
-                        <table class="w-full text-left border-collapse min-w-[600px]">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
                             <thead class="sticky top-0 bg-white z-10">
-                                <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
-                                    <th class="py-3 px-4 w-12 text-center font-medium">No.</th>
-                                    <th class="py-3 px-4 w-1/4 font-medium">Nama Siswa</th>
-                                    <th class="py-3 px-4 w-1/5 font-medium">Kelas</th>
-                                    <th class="py-3 px-4 w-1/6 text-center font-medium">Jumlah</th>
-                                    <th class="py-3 px-4 w-1/4 font-medium">Catatan</th>
-                                    <th class="py-3 px-4 w-24 text-center font-medium">Aksi</th>
+                                <tr id="orderTableHeader" class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                                    <!-- Di-render dinamis melalui JavaScript -->
                                 </tr>
                             </thead>
                             <tbody id="orderList" class="text-sm">
-                                <tr><td colspan="6" class="text-center py-8 text-gray-400">Belum ada pesanan masuk.</td></tr>
+                                <tr><td colspan="7" class="text-center py-8 text-gray-400">Belum ada pesanan masuk.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -239,12 +242,38 @@
                     <label class="block font-semibold mb-1.5 text-gray-700">Nama Lengkap</label>
                     <input type="text" id="orderNama" placeholder="Contoh: Jembar Muhammad" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
                 </div>
-                <div class="flex gap-4">
-                    <div class="w-1/2">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="w-full sm:w-1/2">
                         <label class="block font-semibold mb-1.5 text-gray-700">Kelas</label>
-                        <input type="text" id="orderKelas" placeholder="Contoh: XII.2" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow">
+                        <select id="orderKelas" required class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow bg-white text-gray-700">
+                            <option value="" disabled selected>Pilih Kelas...</option>
+                            <optgroup label="Kelas X">
+                                <option value="X.1">X.1</option>
+                                <option value="X.2">X.2</option>
+                                <option value="X.3">X.3</option>
+                                <option value="X.4">X.4</option>
+                                <option value="X.5">X.5</option>
+                                <option value="X.6">X.6</option>
+                                <option value="X.7">X.7</option>
+                            </optgroup>
+                            <optgroup label="Kelas XI">
+                                <option value="XI.1">XI.1</option>
+                                <option value="XI.2">XI.2</option>
+                                <option value="XI.3">XI.3</option>
+                                <option value="XI.4">XI.4</option>
+                            </optgroup>
+                            <optgroup label="Kelas XII">
+                                <option value="XII.1">XII.1</option>
+                                <option value="XII.2">XII.2</option>
+                                <option value="XII.3">XII.3</option>
+                                <option value="XII.4">XII.4</option>
+                            </optgroup>
+                            <optgroup label="Lainnya">
+                                <option value="Lainnya">Lainnya</option>
+                            </optgroup>
+                        </select>
                     </div>
-                    <div class="w-1/2">
+                    <div class="w-full sm:w-1/2">
                         <label class="block font-semibold mb-1.5 text-gray-700">Jumlah Pesanan</label>
                         <input type="number" id="orderJumlah" placeholder="0" required min="1" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm transition-shadow text-center">
                     </div>
@@ -260,7 +289,7 @@
         </div>
     </div>
 
-    <!-- MODAL KONFIRMASI HAPUS -->
+    <!-- MODAL KONFIRMASI (HAPUS / CLOSE PO) -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="deleteConfirmModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
             
@@ -269,7 +298,7 @@
             </button>
             
             <h2 id="deleteModalTitle" class="text-xl font-bold text-red-600 mb-2">Konfirmasi Penghapusan</h2>
-            <p class="text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 border border-red-100 font-medium leading-relaxed">
+            <p id="deleteModalWarning" class="text-xs text-red-500 bg-red-50 p-3 rounded-xl mb-4 border border-red-100 font-medium leading-relaxed">
                 Tindakan ini permanen dan tidak dapat dibatalkan.
             </p>
             <p id="deleteModalInstruction" class="text-sm text-gray-600 mb-3">
@@ -407,7 +436,15 @@
         function openEditOrderModal(id, nama, kelas, jumlah, catatan) {
             editingOrderId = id;
             document.getElementById('orderNama').value = nama;
-            document.getElementById('orderKelas').value = kelas;
+            
+            const kelasSelect = document.getElementById('orderKelas');
+            // Cek apakah opsi kelas ada di dropdown, jika tidak otomatis ke 'Lainnya'
+            if (Array.from(kelasSelect.options).some(opt => opt.value === kelas)) {
+                kelasSelect.value = kelas;
+            } else {
+                kelasSelect.value = 'Lainnya';
+            }
+            
             document.getElementById('orderJumlah').value = jumlah;
             document.getElementById('orderCatatan').value = catatan || '';
             document.getElementById('orderModalTitle').innerText = "Edit Informasi Pesanan";
@@ -415,7 +452,7 @@
             openModal('orderModal');
         }
 
-        // LOGIKA INPUT MODAL HAPUS
+        // LOGIKA INPUT MODAL HAPUS / KONFIRMASI
         document.getElementById('deleteConfirmInput').addEventListener('input', function(e) {
             const btn = document.getElementById('btnExecuteDelete');
             const expectedName = (window.deleteExpectedName || "").trim();
@@ -457,9 +494,29 @@
         const storage = getStorage(app);
 
         let currentProductId = null;
+        let currentProductIsActive = true;
         let unsubscribeOrders = null;
 
-        // TRIGGER EDIT & DELETE VIA WINDOW OBJECT
+        // UPDATE UI STATE UNTUK PRODUK AKTIF / NON-AKTIF (CLOSE PO)
+        function updateProductUIState(isActive) {
+            const badge = document.getElementById('productStatusBadge');
+            const btnClose = document.getElementById('btnClosePO');
+            const btnAddOrder = document.getElementById('btnAddOrder');
+
+            if (isActive) {
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span> Produk Aktif`;
+                badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-brand-green mb-2";
+                btnClose.classList.remove('hidden');
+                btnAddOrder.classList.remove('hidden');
+            } else {
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> PO Ditutup`;
+                badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-600 mb-2";
+                btnClose.classList.add('hidden');
+                btnAddOrder.classList.add('hidden');
+            }
+        }
+
+        // TRIGGER FITUR WINDOW
         window.triggerEditProduct = function(productId, productName) {
             openEditProductModal(productId, productName);
         };
@@ -474,9 +531,15 @@
             window.deleteExpectedName = productName;
 
             document.getElementById('deleteModalTitle').innerText = "Hapus Produk";
-            document.getElementById('deleteTargetText').innerText = productName;
+            document.getElementById('deleteModalTitle').className = "text-xl font-bold text-red-600 mb-2";
+            document.getElementById('deleteModalWarning').classList.remove('hidden');
+            document.getElementById('deleteModalInstruction').innerHTML = `Ketik nama produk <span id="deleteTargetText" class="font-bold text-gray-900 underline select-all bg-gray-100 px-1.5 py-0.5 rounded">${productName}</span> untuk mengonfirmasi:`;
+            
+            const btn = document.getElementById('btnExecuteDelete');
+            btn.className = "w-full bg-red-600 disabled:bg-red-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm flex justify-center items-center gap-2";
+            btn.innerText = "Saya mengerti, hapus ini";
+            btn.disabled = true;
             document.getElementById('deleteConfirmInput').value = "";
-            document.getElementById('btnExecuteDelete').disabled = true;
 
             openModal('deleteConfirmModal');
         };
@@ -487,17 +550,54 @@
             window.deleteExpectedName = studentName;
 
             document.getElementById('deleteModalTitle').innerText = "Hapus Pesanan";
-            document.getElementById('deleteTargetText').innerText = studentName;
+            document.getElementById('deleteModalTitle').className = "text-xl font-bold text-red-600 mb-2";
+            document.getElementById('deleteModalWarning').classList.remove('hidden');
+            document.getElementById('deleteModalInstruction').innerHTML = `Ketik nama berikut <span id="deleteTargetText" class="font-bold text-gray-900 underline select-all bg-gray-100 px-1.5 py-0.5 rounded">${studentName}</span> untuk mengonfirmasi:`;
+            
+            const btn = document.getElementById('btnExecuteDelete');
+            btn.className = "w-full bg-red-600 disabled:bg-red-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm flex justify-center items-center gap-2";
+            btn.innerText = "Saya mengerti, hapus ini";
+            btn.disabled = true;
             document.getElementById('deleteConfirmInput').value = "";
-            document.getElementById('btnExecuteDelete').disabled = true;
 
             openModal('deleteConfirmModal');
         };
 
-        // EKSEKUSI HAPUS
+        window.triggerClosePO = function() {
+            const productName = document.getElementById('selectedProductName').innerText;
+            window.deleteType = 'closePO';
+            window.deleteItemId = currentProductId;
+            window.deleteExpectedName = productName;
+
+            document.getElementById('deleteModalTitle').innerText = "Konfirmasi Close PO";
+            document.getElementById('deleteModalTitle').className = "text-xl font-bold text-yellow-600 mb-2";
+            document.getElementById('deleteModalWarning').classList.add('hidden');
+            document.getElementById('deleteModalInstruction').innerHTML = `Ketik nama produk <span id="deleteTargetText" class="font-bold text-gray-900 underline select-all bg-gray-100 px-1.5 py-0.5 rounded">${productName}</span> untuk menutup PO:`;
+            
+            const btn = document.getElementById('btnExecuteDelete');
+            btn.className = "w-full bg-yellow-500 disabled:bg-yellow-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-all shadow-md text-sm flex justify-center items-center gap-2";
+            btn.innerText = "Tutup PO Sekarang";
+            btn.disabled = true;
+            document.getElementById('deleteConfirmInput').value = "";
+
+            openModal('deleteConfirmModal');
+        };
+
+        // CHECKBOX DISTRIBUSI PRODUK
+        window.triggerToggleDistribution = async function(orderId, isChecked) {
+            try {
+                await updateDoc(doc(db, "orders", orderId), { distributed: isChecked });
+            } catch (error) {
+                console.error("Gagal update status distribusi:", error);
+                alert("Gagal mengupdate status: " + error.message);
+            }
+        };
+
+        // EKSEKUSI HAPUS / CLOSE PO
         document.getElementById('btnExecuteDelete').addEventListener('click', async () => {
             const btn = document.getElementById('btnExecuteDelete');
-            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menghapus...`;
+            const originalText = btn.innerText;
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
             btn.disabled = true;
 
             try {
@@ -511,13 +611,15 @@
                     }
                 } else if (window.deleteType === 'order') {
                     await deleteDoc(doc(db, "orders", window.deleteItemId));
+                } else if (window.deleteType === 'closePO') {
+                    await updateDoc(doc(db, "products", window.deleteItemId), { isActive: false });
                 }
 
                 closeModal('deleteConfirmModal');
             } catch (error) {
-                alert("Gagal menghapus: " + error.message);
+                alert("Gagal memproses aksi: " + error.message);
             } finally {
-                btn.innerHTML = "Saya mengerti, hapus ini";
+                btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         });
@@ -543,59 +645,58 @@
                 const data = docSnap.data();
                 const productId = docSnap.id;
                 const isSelected = currentProductId === productId;
+                const isActive = data.isActive !== false;
 
-                // Update judul header jika produk yang sedang dibuka di-edit nama-nya
                 if (isSelected) {
                     document.getElementById('selectedProductName').innerText = data.name;
+                    const prevStatus = currentProductIsActive;
+                    currentProductIsActive = isActive;
+                    updateProductUIState(isActive);
+
+                    // Jika status berubah (misal dari aktif ke Close PO), muat ulang tabel pesanan
+                    if (prevStatus !== isActive) {
+                        loadOrders(productId);
+                    }
                 }
 
-                // Membangun elemen List Item dengan struktur Relative dan Z-Index
                 const li = document.createElement('li');
                 li.className = `group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm transition-all cursor-pointer ${isSelected ? 'bg-white text-brand-green shadow-sm font-bold' : 'hover:bg-white/10 text-white font-medium'}`;
-                li.onclick = () => selectProduct(productId, data.name);
+                li.onclick = () => selectProduct(productId, data.name, isActive);
                 
-                // Elemen Background Image jika imageUrl tersedia
                 if (data.imageUrl) {
                     const bgDiv = document.createElement('div');
-                    // Opacity 25% ketika dipilih agar teks dan tombol aksi tetap terbaca (putih), opacity 10% saat tidak dipilih (hijau)
                     const opacityClass = isSelected ? 'opacity-25' : 'opacity-10 group-hover:opacity-20';
                     bgDiv.className = `absolute inset-0 bg-cover bg-center transition-opacity duration-300 bg-img-layer ${opacityClass}`;
                     bgDiv.style.backgroundImage = `url('${data.imageUrl}')`;
                     li.appendChild(bgDiv);
                 }
 
-                // Elemen Teks Nama Produk (Z-index berada di atas background)
                 const nameSpan = document.createElement('span');
                 nameSpan.className = `relative z-10 flex-1 truncate pr-2 text-name`;
                 nameSpan.innerText = data.name;
+                
+                if (!isActive && !isSelected) {
+                    const closedIndicator = document.createElement('span');
+                    closedIndicator.className = "relative z-10 w-2 h-2 rounded-full bg-red-400 mr-2";
+                    li.prepend(closedIndicator);
+                }
 
-                // Elemen Kontainer Tombol Aksi (Z-index berada di atas background)
                 const actionDiv = document.createElement('div');
                 actionDiv.className = "relative z-10 flex items-center gap-1 shrink-0 action-btns";
 
-                // Tombol Edit Produk
                 const editBtn = document.createElement('button');
                 editBtn.title = "Edit Nama Produk";
                 editBtn.className = `p-1.5 rounded-lg transition-colors ${isSelected ? 'text-gray-500 hover:bg-gray-100 hover:text-brand-green' : 'text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
-                editBtn.innerHTML = `
-                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                `;
+                editBtn.innerHTML = `<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>`;
                 editBtn.onclick = (e) => {
                     e.stopPropagation();
                     window.triggerEditProduct(productId, data.name);
                 };
 
-                // Tombol Hapus Produk
                 const deleteBtn = document.createElement('button');
                 deleteBtn.title = "Hapus Produk";
                 deleteBtn.className = `p-1.5 rounded-lg transition-colors ${isSelected ? 'text-red-500 hover:bg-red-50' : 'text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100'}`;
-                deleteBtn.innerHTML = `
-                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                `;
+                deleteBtn.innerHTML = `<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
                     window.triggerDeleteProduct(productId, data.name);
@@ -612,14 +713,17 @@
             productListEl.innerHTML = `<li class="text-center text-red-200 text-xs mt-2 bg-red-900/50 p-2 rounded">Error: ${error.message}</li>`;
         });
 
-        // FUNGSI MEMILIH PRODUK (Mengubah Class secara dinamis)
-        function selectProduct(id, name) {
+        // FUNGSI MEMILIH PRODUK
+        function selectProduct(id, name, isActive) {
             currentProductId = id;
+            currentProductIsActive = isActive;
             
             document.getElementById('emptyState').classList.add('hidden');
             document.getElementById('mainDashboard').classList.remove('hidden');
             document.getElementById('mainDashboard').classList.add('flex');
             document.getElementById('selectedProductName').innerText = name;
+            
+            updateProductUIState(isActive);
 
             if (window.innerWidth < 768) {
                 toggleMobileSidebar();
@@ -633,13 +737,11 @@
                 const buttons = actionDiv ? actionDiv.querySelectorAll('button') : [];
                 
                 if(span && span.innerText === name) {
-                    // Update state Aktif / Dipilih (Warna Putih + Opacity Image 25%)
                     li.className = 'group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm font-bold transition-all cursor-pointer bg-white text-brand-green shadow-sm';
                     if (bgDiv) bgDiv.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-300 opacity-25 bg-img-layer';
                     if(buttons[0]) buttons[0].className = 'p-1.5 rounded-lg transition-colors text-gray-500 hover:bg-gray-100 hover:text-brand-green';
                     if(buttons[1]) buttons[1].className = 'p-1.5 rounded-lg transition-colors text-red-500 hover:bg-red-50';
                 } else if(span) {
-                    // Update state Inaktif (Warna transparan Hijau + Opacity Image 10%)
                     li.className = 'group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
                     if (bgDiv) bgDiv.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-300 opacity-10 group-hover:opacity-20 bg-img-layer';
                     if(buttons[0]) buttons[0].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100';
@@ -652,9 +754,36 @@
         // BACA PESANAN
         function loadOrders(productId) {
             const orderListEl = document.getElementById('orderList');
+            const orderHeaderEl = document.getElementById('orderTableHeader');
             const totalEl = document.getElementById('totalPesanan');
             
             if(unsubscribeOrders) unsubscribeOrders();
+
+            // Cek apakah PO sudah ditutup
+            const isClosed = !currentProductIsActive;
+            const colSpanCount = isClosed ? 7 : 6;
+
+            // Render Header Tabel Sesuai Status PO
+            if (isClosed) {
+                orderHeaderEl.innerHTML = `
+                    <th class="py-3 px-4 w-12 text-center font-medium">No.</th>
+                    <th class="py-3 px-4 w-16 text-center font-medium" title="Centang jika sudah diberikan">Distribusi</th>
+                    <th class="py-3 px-4 w-1/4 font-medium">Nama Siswa</th>
+                    <th class="py-3 px-4 w-1/5 font-medium">Kelas</th>
+                    <th class="py-3 px-4 w-1/6 text-center font-medium">Jumlah</th>
+                    <th class="py-3 px-4 w-1/4 font-medium">Catatan</th>
+                    <th class="py-3 px-4 w-24 text-center font-medium">Aksi</th>
+                `;
+            } else {
+                orderHeaderEl.innerHTML = `
+                    <th class="py-3 px-4 w-12 text-center font-medium">No.</th>
+                    <th class="py-3 px-4 w-1/4 font-medium">Nama Siswa</th>
+                    <th class="py-3 px-4 w-1/5 font-medium">Kelas</th>
+                    <th class="py-3 px-4 w-1/6 text-center font-medium">Jumlah</th>
+                    <th class="py-3 px-4 w-1/4 font-medium">Catatan</th>
+                    <th class="py-3 px-4 w-24 text-center font-medium">Aksi</th>
+                `;
+            }
 
             const qOrders = query(collection(db, "orders"), where("productId", "==", productId));
             
@@ -663,15 +792,25 @@
                 let totalPesanan = 0;
 
                 if (snapshot.empty) {
-                    orderListEl.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-gray-400">Belum ada pesanan masuk untuk produk ini.</td></tr>';
+                    orderListEl.innerHTML = `<tr><td colspan="${colSpanCount}" class="text-center py-10 text-gray-400">Belum ada pesanan masuk untuk produk ini.</td></tr>`;
                     totalEl.innerText = '0';
                     return;
                 }
 
+                // Sorting: Diurutkan berdasarkan KELAS terlebih dahulu, baru Waktu (createdAt)
                 const sortedDocs = snapshot.docs.sort((a, b) => {
-                    const timeA = a.data().createdAt?.toMillis() || Date.now();
-                    const timeB = b.data().createdAt?.toMillis() || Date.now();
-                    return timeB - timeA;
+                    const dataA = a.data();
+                    const dataB = b.data();
+                    
+                    const kelasA = dataA.kelas || '';
+                    const kelasB = dataB.kelas || '';
+                    
+                    const kelasCompare = kelasA.localeCompare(kelasB, 'id', { numeric: true });
+                    if (kelasCompare !== 0) return kelasCompare;
+                    
+                    const timeA = dataA.createdAt?.toMillis() || Date.now();
+                    const timeB = dataB.createdAt?.toMillis() || Date.now();
+                    return timeB - timeA; 
                 });
 
                 sortedDocs.forEach((docSnap, index) => {
@@ -679,12 +818,25 @@
                     const orderId = docSnap.id;
                     const qty = parseInt(data.jumlah) || 0;
                     totalPesanan += qty;
+                    
+                    const isDistributed = isClosed && (data.distributed === true);
+                    const nameTextClass = isDistributed ? "text-gray-400 line-through decoration-2 decoration-gray-300" : "text-gray-800";
+                    const rowBgClass = isDistributed ? "bg-gray-50/70 opacity-75 hover:opacity-100" : "hover:bg-green-50/50";
 
                     const tr = document.createElement('tr');
-                    tr.className = "border-b border-gray-50 hover:bg-green-50/50 transition-colors duration-200 group";
+                    tr.className = `border-b border-gray-50 transition-colors duration-200 group ${rowBgClass}`;
+                    
+                    // Render Kolom Checkbox Distribusi Hanya Jika PO Sudah Ditutup
+                    const distributionTd = isClosed ? `
+                        <td class="py-3.5 px-4 text-center">
+                            <input type="checkbox" ${data.distributed ? 'checked' : ''} onchange="window.triggerToggleDistribution('${orderId}', this.checked)" class="w-4 h-4 text-brand-green bg-gray-100 border-gray-300 rounded focus:ring-brand-green cursor-pointer transition-all">
+                        </td>
+                    ` : '';
+
                     tr.innerHTML = `
                         <td class="py-3.5 px-4 text-center font-medium text-gray-400 group-hover:text-brand-green transition-colors">${index + 1}</td>
-                        <td class="py-3.5 px-4 font-semibold text-gray-800 break-words">${data.nama}</td>
+                        ${distributionTd}
+                        <td class="py-3.5 px-4 font-semibold ${nameTextClass} break-words transition-all">${data.nama}</td>
                         <td class="py-3.5 px-4 text-gray-600">${data.kelas}</td>
                         <td class="py-3.5 px-4 text-center">
                             <span class="inline-block bg-gray-100 group-hover:bg-green-100 group-hover:text-brand-green text-gray-700 font-bold px-3 py-1 rounded-lg transition-colors">${qty}</span>
@@ -694,15 +846,11 @@
                             <div class="flex items-center justify-center gap-1">
                                 <!-- Edit Pesanan -->
                                 <button onclick="window.triggerEditOrder('${orderId}', '${data.nama.replace(/'/g, "\\'")}', '${data.kelas.replace(/'/g, "\\'")}', ${qty}, '${(data.catatan || '').replace(/'/g, "\\'")}')" title="Edit Pesanan" class="p-1.5 text-gray-400 hover:text-brand-green hover:bg-green-50 rounded-lg transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </button>
                                 <!-- Hapus Pesanan -->
                                 <button onclick="window.triggerDeleteOrder('${orderId}', '${data.nama.replace(/'/g, "\\'")}')" title="Hapus Pesanan" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                             </div>
                         </td>
@@ -712,7 +860,7 @@
                 totalEl.innerText = totalPesanan.toLocaleString('id-ID');
             }, (error) => {
                 console.error("Gagal load pesanan:", error);
-                orderListEl.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500 text-sm">Gagal memuat: ${error.message}</td></tr>`;
+                orderListEl.innerHTML = `<tr><td colspan="${colSpanCount}" class="text-center py-4 text-red-500 text-sm">Gagal memuat: ${error.message}</td></tr>`;
             });
         }
 
@@ -739,13 +887,11 @@
                 }
 
                 if (editingProductId) {
-                    // Update Produk
                     const updateData = { name };
                     if (imageUrl) updateData.imageUrl = imageUrl;
                     await updateDoc(doc(db, "products", editingProductId), updateData);
                 } else {
-                    // Tambah Produk Baru
-                    await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp() });
+                    await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp(), isActive: true });
                 }
                 
                 closeModal('productModal');
@@ -773,14 +919,13 @@
                     nama: document.getElementById('orderNama').value,
                     kelas: document.getElementById('orderKelas').value,
                     jumlah: Number(document.getElementById('orderJumlah').value),
-                    catatan: document.getElementById('orderCatatan').value
+                    catatan: document.getElementById('orderCatatan').value,
+                    ...(editingOrderId ? {} : { distributed: false })
                 };
 
                 if (editingOrderId) {
-                    // Update Pesanan
                     await updateDoc(doc(db, "orders", editingOrderId), orderData);
                 } else {
-                    // Tambah Pesanan Baru
                     await addDoc(collection(db, "orders"), {
                         ...orderData,
                         productId: currentProductId,
