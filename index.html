@@ -34,6 +34,10 @@
             }
         }
     </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         /* Custom Scrollbar Modern */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -87,6 +91,12 @@
                 <li class="text-center text-green-300/80 italic text-sm mt-4">Memuat produk...</li>
             </ul>
 
+            <!-- Menu Analisis Hasil -->
+            <button onclick="window.showAnalysisDashboard()" class="mb-3 shrink-0 w-full py-2.5 bg-brand-dark/40 hover:bg-brand-dark text-white border border-white/20 text-sm font-semibold rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                <span class="whitespace-nowrap">Informasi/Analisis Hasil</span>
+            </button>
+
             <!-- Tombol Tambah Produk -->
             <button onclick="openAddProductModal()" class="mt-auto shrink-0 w-full py-2.5 bg-white/10 hover:bg-white text-white hover:text-brand-green border border-white/30 text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2 group">
                 <svg class="w-4 h-4 transform group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -131,7 +141,35 @@
                 <p class="text-gray-500 max-w-sm text-sm md:text-base leading-relaxed">Pilih produk di sidebar atau buat yang baru untuk mulai mengelola pesanan Danusan Anda.</p>
             </div>
 
-            <!-- DASHBOARD UTAMA -->
+            <!-- DASHBOARD ANALISIS / INFORMASI HASIL -->
+            <div id="analysisDashboard" class="hidden h-full flex-col min-h-0 animate-[fadeIn_0.4s_ease-out]">
+                <div class="mb-6 shrink-0">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Analisis Hasil Danusan</h2>
+                    <p class="text-gray-500 mt-2 text-sm md:text-base">Grafik pertumbuhan kronologis berdasarkan laporan yang telah disimpan. (Klik titik pada grafik untuk melihat detail)</p>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-6 pb-6 min-h-0">
+                    <!-- KOTAK GRAFIK -->
+                    <div class="bg-white p-6 rounded-2xl flex flex-col shadow-soft border border-gray-100 shrink-0">
+                        <div class="h-72 w-full">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- KOTAK DETAIL LAPORAN SAAT DIKLIK -->
+                    <div id="analysisReportDetail" class="hidden bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden shrink-0">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-brand-green text-white flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <h3 id="analysisReportTitle" class="text-lg font-bold">Detail Laporan</h3>
+                        </div>
+                        <div class="p-6">
+                            <div id="analysisReportContent" class="font-mono text-sm text-gray-800 leading-relaxed bg-gray-50 p-5 rounded-xl border border-gray-200 overflow-x-auto whitespace-pre-wrap"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD UTAMA (PRODUK) -->
             <div id="mainDashboard" class="hidden h-full flex-col min-h-0 animate-[fadeIn_0.4s_ease-out]">
                 
                 <!-- HEADER (Nama Produk) -->
@@ -268,6 +306,13 @@
 
                             <!-- STATE 4: Lihat Laporan & Copy -->
                             <div id="reportViewState" class="hidden">
+                                
+                                <!-- Modifikasi Tombol Sesuai Permintaan -->
+                                <button disabled class="w-full mb-6 bg-gray-100 border border-gray-300 text-gray-500 font-bold py-3.5 px-6 rounded-xl cursor-not-allowed shadow-inner flex items-center justify-center gap-2 transition-all">
+                                    <svg class="w-5 h-5 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Laporan telah disimpan ke menu Informasi/Analisis Hasil
+                                </button>
+
                                 <div class="relative bg-gray-50 border border-gray-200 rounded-xl p-6 font-mono text-sm text-gray-800 leading-relaxed shadow-inner overflow-x-auto whitespace-pre-wrap" id="finalReportText">
                                     <!-- Laporan Text -->
                                 </div>
@@ -398,6 +443,7 @@
         let isMobileSidebarOpen = false;
         let editingProductId = null;
         let editingOrderId = null;
+        let growthChartInstance = null;
         
         // Data Global
         window.productsDataMap = {}; 
@@ -487,8 +533,108 @@
             document.getElementById('productImageLabel').innerHTML = fileName ? 
                 `<span class="text-brand-green font-semibold truncate max-w-[200px] inline-block">${fileName}</span>` : "Upload Foto Produk";
         });
+
+        window.showAnalysisDashboard = function() {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('flex');
+            
+            const analysisView = document.getElementById('analysisDashboard');
+            analysisView.classList.remove('hidden');
+            analysisView.classList.add('flex');
+
+            const listItems = document.getElementById('productList').children;
+            for(let li of listItems) {
+                if(li.tagName.toLowerCase() === 'li' && li.querySelector('.text-name')) {
+                    li.className = 'group relative overflow-hidden flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all cursor-pointer hover:bg-white/10 text-white';
+                    const bgDiv = li.querySelector('.bg-img-layer');
+                    if (bgDiv) bgDiv.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-300 opacity-10 group-hover:opacity-20 bg-img-layer';
+                    const btns = li.querySelectorAll('button');
+                    if(btns[0]) btns[0].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100';
+                    if(btns[1]) btns[1].className = 'p-1.5 rounded-lg transition-colors text-white/40 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100';
+                }
+            }
+            window.currentProductId = null; 
+
+            if (window.innerWidth < 768) toggleMobileSidebar();
+            
+            renderGrowthChart();
+        };
+
+        function renderGrowthChart() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            if (growthChartInstance) growthChartInstance.destroy();
+
+            const productsWithReport = Object.values(window.productsDataMap)
+                .filter(p => p.report && p.report.createdAt)
+                .sort((a, b) => new Date(a.report.createdAt) - new Date(b.report.createdAt));
+
+            const labels = productsWithReport.map(p => p.name);
+            const dataPoints = productsWithReport.map(p => {
+                const modal = Number(p.report.modalAwal) || 0;
+                const keuntungan = Number(p.report.keuntungan) || 0;
+                if (modal === 0 && keuntungan > 0) return 100;
+                if (modal === 0 && keuntungan === 0) return 0;
+                return (keuntungan / modal) * 100;
+            });
+
+            growthChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pertumbuhan (%)',
+                        data: dataPoints,
+                        borderColor: '#1f5f3e',
+                        backgroundColor: 'rgba(31, 95, 62, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#1f5f3e',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (e, activeEls) => {
+                        if (activeEls.length > 0) {
+                            const index = activeEls[0].index;
+                            const selectedProduct = productsWithReport[index];
+                            showAnalysisReportDetail(selectedProduct);
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Persentase Pertumbuhan (%)' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Pertumbuhan: ' + context.parsed.y.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('analysisReportDetail').classList.add('hidden');
+        }
+
+        function showAnalysisReportDetail(product) {
+            document.getElementById('analysisReportDetail').classList.remove('hidden');
+            document.getElementById('analysisReportTitle').innerText = 'Detail Laporan: ' + product.name;
+            const rawText = generateRawReportText(product.name, product.report);
+            document.getElementById('analysisReportContent').innerHTML = rawText.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+        }
         
-        // ======== LOGIKA LAPORAN PENJUALAN ========
         const formatRp = (num) => 'Rp ' + Number(num || 0).toLocaleString('id-ID');
         
         window.updateReportSectionUI = function() {
@@ -502,7 +648,6 @@
             const productData = window.productsDataMap[window.currentProductId];
             const isPOClosed = !window.currentProductIsActive;
             
-            // Sembunyikan bagian laporan jika PO masih aktif
             if (!isPOClosed) {
                 reportContainer.classList.add('hidden');
                 return;
@@ -514,17 +659,14 @@
             formState.classList.add('hidden');
             viewState.classList.add('hidden');
             
-            // Jika Laporan Sudah Ada Tersimpan
             if (productData && productData.report) {
                 viewState.classList.remove('hidden');
-                renderFinalReportText(productData.report);
-            } 
-            // Jika Laporan Belum Dibuat
-            else {
+                renderFinalReportText(productData.name, productData.report);
+            } else {
                 if (window.currentProductAllDistributed) {
-                    unlockedState.classList.remove('hidden'); // Tombol Mulai Buat Laporan
+                    unlockedState.classList.remove('hidden'); 
                 } else {
-                    lockedState.classList.remove('hidden'); // Terkunci disuruh centang semua
+                    lockedState.classList.remove('hidden'); 
                 }
             }
         };
@@ -532,7 +674,6 @@
         window.startCreateReport = function() {
             document.getElementById('reportUnlockedState').classList.add('hidden');
             document.getElementById('reportFormState').classList.remove('hidden');
-            // Reset state
             document.getElementById('inputModalAwal').value = '';
             document.getElementById('inputHasilKotor').value = '';
             window.expenseItems = [{ nama: '', harga: '' }];
@@ -586,9 +727,7 @@
             document.getElementById('displayHasilBersihUI').innerText = formatRp(bersih);
         };
 
-        window.renderFinalReportText = function(reportObj) {
-            const textEl = document.getElementById('finalReportText');
-            
+        function generateRawReportText(productName, reportObj) {
             let expenseLines = "";
             let totalPengeluaran = 0;
             if (reportObj.pengeluaran && reportObj.pengeluaran.length > 0) {
@@ -602,22 +741,19 @@
                 expenseLines = "- (Tidak ada)\n";
             }
 
-            // Hitung persentase pertumbuhan (ROI)
             const modalAwal = Number(reportObj.modalAwal || 0);
             const keuntungan = Number(reportObj.keuntungan || 0);
             let pertumbuhanText = "0%";
             if (modalAwal > 0) {
                 let calc = (keuntungan / modalAwal) * 100;
-                // Jika hasilnya bulat, tampilkan tanpa desimal, jika tidak beri 2 desimal
                 pertumbuhanText = (Number.isInteger(calc) ? calc : calc.toFixed(2)) + "%";
             } else if (modalAwal === 0 && keuntungan > 0) {
                 pertumbuhanText = "Tak terhingga (Modal Rp 0)";
             }
 
-            // Teks laporan (Tanda bintang '*' digunakan untuk format tebal pada chat WA)
-            const rawText = `*LAPORAN PENJUALAN DANUSAN*
-Produk: ${window.currentProductName}
-Total Terjual: ${window.currentTotalPesanan} Porsi
+            return `*LAPORAN PENJUALAN DANUSAN*
+Produk: ${productName}
+Total Terjual: ${reportObj.totalPesanan || 0} Porsi
 
 *PEMASUKAN*
 Modal Awal: Rp ${modalAwal.toLocaleString('id-ID')}
@@ -630,9 +766,12 @@ Total Pengeluaran: Rp ${totalPengeluaran.toLocaleString('id-ID')}
 *HASIL AKHIR*
 Pertumbuhan: ${pertumbuhanText}
 Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
+        }
 
+        window.renderFinalReportText = function(productName, reportObj) {
+            const rawText = generateRawReportText(productName, reportObj);
             window.currentReportTextRaw = rawText;
-            textEl.innerHTML = rawText.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            document.getElementById('finalReportText').innerHTML = rawText.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
         };
 
         window.copyReportWA = function() {
@@ -667,6 +806,14 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
         const storage = getStorage(app);
         let unsubscribeOrders = null;
 
+        // FUNGSI HELPER: Mencegah operasi Firebase menggantung selamanya tanpa catch
+        const withTimeout = (promise, ms = 8000) => {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Koneksi jaringan terputus atau terlalu lambat.")), ms))
+            ]);
+        };
+
         function updateProductUIState(isActive) {
             const badge = document.getElementById('productStatusBadge');
             const btnClose = document.getElementById('btnClosePO');
@@ -699,7 +846,6 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
             openModal('orderModal');
         };
 
-        // SETUP MODAL DELETE/KONFIRMASI
         window.triggerDeleteProduct = function(productId, productName) { showConfirmModal('product', productId, productName, "Hapus Produk", "text-red-600", true, "Saya mengerti, hapus", "bg-red-600"); };
         window.triggerDeleteOrder = function(orderId, studentName) { showConfirmModal('order', orderId, studentName, "Hapus Pesanan", "text-red-600", true, "Saya mengerti, hapus", "bg-red-600"); };
         window.triggerClosePO = function() { showConfirmModal('closePO', window.currentProductId, window.currentProductName, "Konfirmasi Close PO", "text-yellow-600", false, "Tutup PO Sekarang", "bg-yellow-500"); };
@@ -718,8 +864,11 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
         }
 
         window.triggerToggleDistribution = async function(orderId, isChecked) {
-            try { await updateDoc(doc(db, "orders", orderId), { distributed: isChecked }); } 
-            catch (error) { alert("Gagal mengupdate status: " + error.message); }
+            try { 
+                await withTimeout(updateDoc(doc(db, "orders", orderId), { distributed: isChecked }), 5000); 
+            } catch (error) { 
+                alert("Gagal mengupdate status: " + error.message); 
+            }
         };
 
         // EKSEKUSI HAPUS / CLOSE PO / HAPUS LAPORAN
@@ -728,22 +877,25 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
             const originalText = btn.innerText; btn.innerHTML = `Memproses...`; btn.disabled = true;
 
             try {
+                let task = null;
                 if (window.deleteType === 'product') {
-                    await deleteDoc(doc(db, "products", window.deleteItemId));
-                    if (window.currentProductId === window.deleteItemId) {
-                        window.currentProductId = null;
-                        document.getElementById('mainDashboard').classList.add('hidden');
-                        document.getElementById('mainDashboard').classList.remove('flex');
-                        document.getElementById('emptyState').classList.remove('opacity-0', 'hidden');
-                    }
+                    task = deleteDoc(doc(db, "products", window.deleteItemId)).then(() => {
+                        if (window.currentProductId === window.deleteItemId) {
+                            window.currentProductId = null;
+                            document.getElementById('mainDashboard').classList.add('hidden');
+                            document.getElementById('mainDashboard').classList.remove('flex');
+                            document.getElementById('emptyState').classList.remove('opacity-0', 'hidden');
+                        }
+                    });
                 } else if (window.deleteType === 'order') {
-                    await deleteDoc(doc(db, "orders", window.deleteItemId));
+                    task = deleteDoc(doc(db, "orders", window.deleteItemId));
                 } else if (window.deleteType === 'closePO') {
-                    await updateDoc(doc(db, "products", window.deleteItemId), { isActive: false });
+                    task = updateDoc(doc(db, "products", window.deleteItemId), { isActive: false });
                 } else if (window.deleteType === 'deleteReport') {
-                    const prodRef = doc(db, "products", window.deleteItemId);
-                    await updateDoc(prodRef, { report: null });
+                    task = updateDoc(doc(db, "products", window.deleteItemId), { report: null });
                 }
+                
+                if (task) await withTimeout(task);
                 closeModal('deleteConfirmModal');
             } catch (error) {
                 alert("Gagal memproses aksi: " + error.message);
@@ -779,7 +931,7 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
                     updateProductUIState(isActive);
                     window.updateReportSectionUI();
                     
-                    if (prevStatus !== isActive) loadOrders(productId); // Reload jika status PO berubah
+                    if (prevStatus !== isActive) loadOrders(productId); 
                 }
 
                 const li = document.createElement('li');
@@ -813,12 +965,19 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
 
                 actionDiv.appendChild(editBtn); actionDiv.appendChild(deleteBtn); li.appendChild(nameSpan); li.appendChild(actionDiv); productListEl.appendChild(li);
             });
+
+            if(!document.getElementById('analysisDashboard').classList.contains('hidden')) renderGrowthChart();
         });
 
         function selectProduct(id, name, isActive) {
             window.currentProductId = id; window.currentProductName = name; window.currentProductIsActive = isActive;
+            
             document.getElementById('emptyState').classList.add('hidden');
-            document.getElementById('mainDashboard').classList.remove('hidden'); document.getElementById('mainDashboard').classList.add('flex');
+            document.getElementById('analysisDashboard').classList.add('hidden');
+            document.getElementById('analysisDashboard').classList.remove('flex');
+            
+            document.getElementById('mainDashboard').classList.remove('hidden'); 
+            document.getElementById('mainDashboard').classList.add('flex');
             document.getElementById('selectedProductName').innerText = name;
             
             updateProductUIState(isActive);
@@ -923,18 +1082,26 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
                 if (file) {
                     try {
                         const storageRef = ref(storage, 'products/' + Date.now() + '_' + file.name);
-                        const snapshot_storage = await Promise.race([uploadBytes(storageRef, file), new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 6000))]);
+                        const snapshot_storage = await withTimeout(uploadBytes(storageRef, file), 10000);
                         imageUrl = await getDownloadURL(snapshot_storage.ref);
-                    } catch (err) { console.warn("Upload gambar dilewati."); }
+                    } catch (err) { console.warn("Upload gambar dilewati atau timeout."); }
                 }
-                if (editingProductId) {
-                    const updateData = { name }; if (imageUrl) updateData.imageUrl = imageUrl;
-                    await updateDoc(doc(db, "products", editingProductId), updateData);
-                } else await addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp(), isActive: true });
                 
-                closeModal('productModal'); document.getElementById('productForm').reset(); document.getElementById('productImageLabel').innerHTML = "Upload Foto Produk";
-            } catch (error) { alert("Gagal menyimpan produk: " + error.message); } 
-            finally { btn.innerHTML = editingProductId ? "Simpan Perubahan" : "Simpan Produk"; btn.disabled = false; }
+                const dbTask = editingProductId ? 
+                    updateDoc(doc(db, "products", editingProductId), { name, ...(imageUrl && {imageUrl}) }) :
+                    addDoc(collection(db, "products"), { name, imageUrl, createdAt: serverTimestamp(), isActive: true });
+
+                await withTimeout(dbTask);
+                
+                closeModal('productModal'); 
+                document.getElementById('productForm').reset(); 
+                document.getElementById('productImageLabel').innerHTML = "Upload Foto Produk";
+            } catch (error) { 
+                alert("Gagal menyimpan produk: " + error.message); 
+            } finally { 
+                btn.innerHTML = editingProductId ? "Simpan Perubahan" : "Simpan Produk"; 
+                btn.disabled = false; 
+            }
         });
 
         // SIMPAN / UPDATE PESANAN
@@ -948,12 +1115,20 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
                     jumlah: Number(document.getElementById('orderJumlah').value), catatan: document.getElementById('orderCatatan').value,
                     ...(editingOrderId ? {} : { distributed: false })
                 };
-                if (editingOrderId) await updateDoc(doc(db, "orders", editingOrderId), orderData);
-                else await addDoc(collection(db, "orders"), { ...orderData, productId: window.currentProductId, createdAt: serverTimestamp() });
+                
+                const dbTask = editingOrderId ? 
+                    updateDoc(doc(db, "orders", editingOrderId), orderData) :
+                    addDoc(collection(db, "orders"), { ...orderData, productId: window.currentProductId, createdAt: serverTimestamp() });
+
+                await withTimeout(dbTask);
                 
                 closeModal('orderModal'); document.getElementById('orderForm').reset();
-            } catch (error) { alert("Gagal menyimpan pesanan: " + error.message); } 
-            finally { btn.innerHTML = editingOrderId ? "Simpan Perubahan" : "Tambahkan Pesanan"; btn.disabled = false; }
+            } catch (error) { 
+                alert("Gagal menyimpan pesanan: " + error.message); 
+            } finally { 
+                btn.innerHTML = editingOrderId ? "Simpan Perubahan" : "Tambahkan Pesanan"; 
+                btn.disabled = false; 
+            }
         });
         
         // SIMPAN LAPORAN KE FIREBASE
@@ -962,12 +1137,12 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
             
             const btn = document.getElementById('btnSaveReport');
             const originalText = btn.innerText;
-            btn.innerText = 'Menyimpan...'; btn.disabled = true;
+            btn.innerText = 'Menyimpan...'; 
+            btn.disabled = true;
             
             const modal = Number(document.getElementById('inputModalAwal').value) || 0;
             const kotor = Number(document.getElementById('inputHasilKotor').value) || 0;
             
-            // Filter pengeluaran yang tidak kosong
             const validExpenses = window.expenseItems.filter(item => item.nama.trim() !== '' && item.harga !== '');
             const totalPengeluaran = validExpenses.reduce((sum, item) => sum + (Number(item.harga) || 0), 0);
             const keuntungan = kotor - totalPengeluaran;
@@ -977,17 +1152,20 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
                 hasilKotor: kotor,
                 pengeluaran: validExpenses,
                 keuntungan: keuntungan,
+                totalPesanan: window.currentTotalPesanan,
                 createdAt: new Date().toISOString()
             };
 
             try {
                 const prodRef = doc(db, "products", window.currentProductId);
-                await updateDoc(prodRef, { report: reportData });
-                // Note: updateReportSectionUI akan otomatis terpanggil karena onSnapshot products berjalan.
+                // Dibungkus timeout agar tombol kembali bisa ditekan walau internet mati
+                await withTimeout(updateDoc(prodRef, { report: reportData }));
             } catch (error) {
                 alert("Gagal menyimpan laporan: " + error.message);
             } finally {
-                btn.innerText = originalText; btn.disabled = false;
+                // Perbaikan Utama: Memastikan state UI selalu di-reset apapun kondisinya
+                btn.innerText = originalText; 
+                btn.disabled = false;
             }
         };
     </script>
