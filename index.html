@@ -181,7 +181,13 @@
                         <h2 id="selectedProductName" class="text-3xl md:text-4xl font-bold text-gray-900 break-words tracking-tight">(Nama Produk)</h2>
                     </div>
                     
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
+                    <div class="flex flex-wrap items-center gap-3 shrink-0">
+                        <!-- TOMBOL BROADCAST AI -->
+                        <button id="btnBroadcastAI" onclick="openBroadcastModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-semibold py-3 px-5 rounded-2xl transition-all duration-300 shadow-soft hover:shadow-md flex items-center gap-2">
+                            <svg class="w-5 h-5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Broadcast AI
+                        </button>
+
                         <!-- TOMBOL CLOSE PO -->
                         <button id="btnClosePO" onclick="window.triggerClosePO()" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold py-3 px-5 rounded-2xl transition-all duration-300 shadow-soft hover:shadow-md flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
@@ -307,7 +313,6 @@
                             <!-- STATE 4: Lihat Laporan & Copy -->
                             <div id="reportViewState" class="hidden">
                                 
-                                <!-- Modifikasi Tombol Sesuai Permintaan -->
                                 <button disabled class="w-full mb-6 bg-gray-100 border border-gray-300 text-gray-500 font-bold py-3.5 px-6 rounded-xl cursor-not-allowed shadow-inner flex items-center justify-center gap-2 transition-all">
                                     <svg class="w-5 h-5 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     Laporan telah disimpan ke menu Informasi/Analisis Hasil
@@ -338,7 +343,6 @@
         </footer>
     </main>
 
-    <!-- Modal Form -->
     <!-- MODAL PRODUK (TAMBAH / EDIT) -->
     <div id="productModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="productModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
@@ -415,6 +419,71 @@
         </div>
     </div>
 
+    <!-- MODAL BROADCAST AI -->
+    <div id="broadcastModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <div id="broadcastModalInner" class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto max-h-[90vh] flex flex-col">
+            <button onclick="closeModal('broadcastModal')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <div class="flex items-center gap-3 mb-4 shrink-0">
+                <div class="p-2.5 bg-emerald-100 text-emerald-700 rounded-2xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Pembuat Broadcast AI ✨</h2>
+                    <p class="text-xs text-gray-500">Generate teks promosi otomatis dengan Gemini AI</p>
+                </div>
+            </div>
+
+            <div class="overflow-y-auto pr-1 space-y-4 text-sm flex-1 no-scrollbar">
+                <div>
+                    <label class="block font-semibold mb-1.5 text-gray-700">Target Penerima</label>
+                    <select id="broadcastTarget" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
+                        <option value="Siswa / Teman Sekolah">Siswa / Teman Sekolah</option>
+                        <option value="Grup WhatsApp Kelas">Grup WhatsApp Kelas</option>
+                        <option value="Guru / Orang Tua">Guru / Orang Tua</option>
+                        <option value="Umum / Publik">Umum / Publik</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1.5 text-gray-700">Gaya Bahasa / Tone</label>
+                    <select id="broadcastTone" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
+                        <option value="Seru & Asyik (Khas Anak Muda)">Seru & Asyik (Khas Anak Muda)</option>
+                        <option value="Persuasif & Bikin Ngiler">Persuasif & Bikin Ngiler</option>
+                        <option value="Singkat, Padat & To the point">Singkat, Padat & To the point</option>
+                        <option value="Sopan & Formal">Sopan & Formal</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1.5 text-gray-700">Harga / Detail Promo (Opsional)</label>
+                    <input type="text" id="broadcastDetail" placeholder="Contoh: Rp 10.000 / porsi, gratis antar ke kelas" class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                </div>
+
+                <button type="button" id="btnGenerateBroadcast" onclick="generateBroadcastAI()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Generate Teks Broadcast
+                </button>
+
+                <!-- Output Broadcast -->
+                <div id="broadcastResultArea" class="hidden space-y-3 pt-2">
+                    <label class="block font-semibold text-gray-700">Hasil Teks Broadcast:</label>
+                    <div id="broadcastResultText" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-sans whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed text-gray-800 shadow-inner"></div>
+                    <div class="flex gap-2">
+                        <button onclick="copyBroadcastText()" class="flex-1 bg-gray-800 hover:bg-black text-white text-xs font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            Salin Teks
+                        </button>
+                        <button onclick="sendBroadcastWA()" class="flex-1 bg-[#25D366] hover:bg-[#1DA851] text-white text-xs font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            Kirim ke WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL KONFIRMASI (HAPUS / CLOSE PO) -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="deleteConfirmModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
@@ -438,6 +507,9 @@
     <!-- UI Scripts -->
     <script>
         document.head.insertAdjacentHTML('beforeend', '<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }</style>');
+
+        // KONFIGURASI GEMINI API
+        const GEMINI_API_KEY = "AQ.Ab8RN6JGoINcA2Q9NzzIG_vd_bDriDYkEREeH4b8Km9H0UnPhQ";
 
         let isSidebarMinimized = false;
         let isMobileSidebarOpen = false;
@@ -519,6 +591,83 @@
             document.getElementById('orderModalTitle').innerText = "Input Pesanan Baru";
             document.getElementById('btnSubmitOrder').innerText = "Tambahkan Pesanan";
             openModal('orderModal');
+        }
+
+        // FUNGSIONALITAS BROADCAST AI
+        function openBroadcastModal() {
+            if (!window.currentProductName) {
+                alert("Pilih produk terlebih dahulu!");
+                return;
+            }
+            document.getElementById('broadcastResultArea').classList.add('hidden');
+            document.getElementById('broadcastResultText').innerText = '';
+            document.getElementById('broadcastDetail').value = '';
+            openModal('broadcastModal');
+        }
+
+        async function generateBroadcastAI() {
+            const productName = window.currentProductName || "Produk Danusan";
+            const target = document.getElementById('broadcastTarget').value;
+            const tone = document.getElementById('broadcastTone').value;
+            const detail = document.getElementById('broadcastDetail').value;
+            const btn = document.getElementById('btnGenerateBroadcast');
+            const resultArea = document.getElementById('broadcastResultArea');
+            const resultText = document.getElementById('broadcastResultText');
+
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses Teks AI...`;
+
+            const promptText = `Buatkan pesan broadcast WhatsApp promosi Penjualan Danusan (Dana Usaha Sekbid 3 OSIS) sekolah.
+- Nama Produk: ${productName}
+- Target Penerima: ${target}
+- Gaya Bahasa / Tone: ${tone}
+- Detail Tambahan / Harga: ${detail ? detail : "Tidak ada"}
+
+Petunjuk:
+1. Gunakan emoji yang ramah dan menarik.
+2. Buat format tulisan yang rapi dengan tebal (*kata*) khas WhatsApp.
+3. Cantumkan Call to Action (CTA) agar pembeli langsung memesan.
+4. Jangan tambahkan salam pembuka atau kata-kata konfirmasi dari AI (langsung berikan teks broadcastnya saja).`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                    const output = data.candidates[0].content.parts[0].text.trim();
+                    resultText.innerText = output;
+                    resultArea.classList.remove('hidden');
+                } else {
+                    alert("Gagal memproses AI: " + (data.error?.message || "Format tidak sesuai"));
+                }
+            } catch (err) {
+                alert("Gagal terhubung ke Gemini API: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Generate Teks Broadcast`;
+            }
+        }
+
+        function copyBroadcastText() {
+            const text = document.getElementById('broadcastResultText').innerText;
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert("Teks broadcast berhasil disalin!");
+                }).catch(() => alert("Gagal menyalin teks."));
+            }
+        }
+
+        function sendBroadcastWA() {
+            const text = document.getElementById('broadcastResultText').innerText;
+            if (text) {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+            }
         }
 
         document.getElementById('deleteConfirmInput').addEventListener('input', function(e) {
@@ -806,7 +955,6 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
         const storage = getStorage(app);
         let unsubscribeOrders = null;
 
-        // FUNGSI HELPER: Mencegah operasi Firebase menggantung selamanya tanpa catch
         const withTimeout = (promise, ms = 8000) => {
             return Promise.race([
                 promise,
@@ -818,14 +966,18 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
             const badge = document.getElementById('productStatusBadge');
             const btnClose = document.getElementById('btnClosePO');
             const btnAddOrder = document.getElementById('btnAddOrder');
+            const btnBroadcast = document.getElementById('btnBroadcastAI');
+
             if (isActive) {
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span> Produk Aktif`;
                 badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-brand-green mb-2";
                 btnClose.classList.remove('hidden'); btnAddOrder.classList.remove('hidden');
+                if (btnBroadcast) btnBroadcast.classList.remove('hidden');
             } else {
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> PO Ditutup`;
                 badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-600 mb-2";
                 btnClose.classList.add('hidden'); btnAddOrder.classList.add('hidden');
+                if (btnBroadcast) btnBroadcast.classList.add('hidden');
             }
         }
 
@@ -1158,12 +1310,10 @@ Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
 
             try {
                 const prodRef = doc(db, "products", window.currentProductId);
-                // Dibungkus timeout agar tombol kembali bisa ditekan walau internet mati
                 await withTimeout(updateDoc(prodRef, { report: reportData }));
             } catch (error) {
                 alert("Gagal menyimpan laporan: " + error.message);
             } finally {
-                // Perbaikan Utama: Memastikan state UI selalu di-reset apapun kondisinya
                 btn.innerText = originalText; 
                 btn.disabled = false;
             }
