@@ -293,7 +293,7 @@
         </footer>
     </main>
 
-    <!-- Modal Form (Sama seperti sebelumnya) -->
+    <!-- Modal Form -->
     <!-- MODAL PRODUK (TAMBAH / EDIT) -->
     <div id="productModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div id="productModalInner" class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300 my-auto">
@@ -410,7 +410,7 @@
         // Data Laporan Form
         window.expenseItems = [{ nama: '', harga: '' }];
 
-        function toggleSidebar() { /* SAMA SEPERTI SEBELUMNYA */
+        function toggleSidebar() { 
             const sidebar = document.getElementById('sidebar');
             const sidebarContent = document.getElementById('sidebarContent');
             const logoContainer = document.getElementById('logoContainer');
@@ -602,20 +602,34 @@
                 expenseLines = "- (Tidak ada)\n";
             }
 
+            // Hitung persentase pertumbuhan (ROI)
+            const modalAwal = Number(reportObj.modalAwal || 0);
+            const keuntungan = Number(reportObj.keuntungan || 0);
+            let pertumbuhanText = "0%";
+            if (modalAwal > 0) {
+                let calc = (keuntungan / modalAwal) * 100;
+                // Jika hasilnya bulat, tampilkan tanpa desimal, jika tidak beri 2 desimal
+                pertumbuhanText = (Number.isInteger(calc) ? calc : calc.toFixed(2)) + "%";
+            } else if (modalAwal === 0 && keuntungan > 0) {
+                pertumbuhanText = "Tak terhingga (Modal Rp 0)";
+            }
+
+            // Teks laporan (Tanda bintang '*' digunakan untuk format tebal pada chat WA)
             const rawText = `*LAPORAN PENJUALAN DANUSAN*
-Produk: *${window.currentProductName}*
-Total Terjual: *${window.currentTotalPesanan} Porsi*
+Produk: ${window.currentProductName}
+Total Terjual: ${window.currentTotalPesanan} Porsi
 
 *PEMASUKAN*
-Modal Awal: Rp ${Number(reportObj.modalAwal || 0).toLocaleString('id-ID')}
+Modal Awal: Rp ${modalAwal.toLocaleString('id-ID')}
 Hasil Kotor: Rp ${Number(reportObj.hasilKotor || 0).toLocaleString('id-ID')}
 
 *PENGELUARAN*
 ${expenseLines.trim()}
-Total Pengeluaran: *Rp ${totalPengeluaran.toLocaleString('id-ID')}*
+Total Pengeluaran: Rp ${totalPengeluaran.toLocaleString('id-ID')}
 
 *HASIL AKHIR*
-Keuntungan (Bersih): *Rp ${Number(reportObj.keuntungan || 0).toLocaleString('id-ID')}*`;
+Pertumbuhan: ${pertumbuhanText}
+Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
 
             window.currentReportTextRaw = rawText;
             textEl.innerHTML = rawText.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
