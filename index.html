@@ -38,6 +38,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- LOAD CONFIGURASI API KEY -->
+    <script src="config.js"></script>
+
     <style>
         /* Custom Scrollbar Modern */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -509,7 +512,7 @@
         document.head.insertAdjacentHTML('beforeend', '<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }</style>');
 
         // KONFIGURASI GEMINI API
-        const GEMINI_API_KEY = "AQ.Ab8RN6JilqquIf1wKPZFd-L81M824h8tgOwqQtJhVJuh4cgDSw";
+        const GEMINI_API_KEY = (typeof CONFIG !== 'undefined' && CONFIG.GEMINI_API_KEY) ? CONFIG.GEMINI_API_KEY : '';
 
         let isSidebarMinimized = false;
         let isMobileSidebarOpen = false;
@@ -597,6 +600,10 @@
         function openBroadcastModal() {
             if (!window.currentProductName) {
                 alert("Pilih produk terlebih dahulu!");
+                return;
+            }
+            if (!GEMINI_API_KEY) {
+                alert("API Key Gemini belum diset dalam config.js!");
                 return;
             }
             document.getElementById('broadcastResultArea').classList.add('hidden');
