@@ -1,7 +1,0 @@
-# Mengabaikan file environment yang berisi API Key rahasia
-.env
-
-# Mengabaikan folder dependensi (tidak perlu di-upload ke GitHub)
-node_modules/
-__pycache__/
-config.js
