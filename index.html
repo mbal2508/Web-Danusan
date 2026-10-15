@@ -273,12 +273,12 @@
                                     <!-- Bagian Kiri: Input Pemasukan & Modal -->
                                     <div class="space-y-5">
                                         <div>
-                                            <label class="block font-semibold mb-2 text-sm text-gray-700">Modal Awal (Rp)</label>
-                                            <input type="number" id="inputModalAwal" placeholder="Contoh: 100000" onkeyup="window.calculateReport()" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm bg-gray-50 focus:bg-white transition-colors">
+                                            <label class="block font-semibold mb-2 text-sm text-gray-700">Modal Awal / Dana Kas Osis (Rp)</label>
+                                            <input type="number" id="inputModalAwal" placeholder="Contoh: 150000" onkeyup="window.calculateReport()" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm bg-gray-50 focus:bg-white transition-colors">
                                         </div>
                                         <div>
                                             <label class="block font-semibold mb-2 text-sm text-gray-700">Hasil Kotor / Total Penjualan (Rp)</label>
-                                            <input type="number" id="inputHasilKotor" placeholder="Contoh: 250000" onkeyup="window.calculateReport()" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm bg-gray-50 focus:bg-white transition-colors">
+                                            <input type="number" id="inputHasilKotor" placeholder="Contoh: 435000" onkeyup="window.calculateReport()" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green shadow-sm bg-gray-50 focus:bg-white transition-colors">
                                         </div>
                                     </div>
                                     
@@ -290,7 +290,7 @@
                                                 + Tambah
                                             </button>
                                         </div>
-                                        <div id="expenseItemsContainer" class="space-y-2 mb-4">
+                                        <div id="expenseItemsContainer" class="space-y-3 mb-4">
                                             <!-- List input dinamis akan muncul disini -->
                                         </div>
                                         <div class="border-t border-gray-300 pt-3 flex justify-between items-center font-bold text-sm">
@@ -788,7 +788,7 @@ Petunjuk:
             document.getElementById('analysisReportDetail').classList.remove('hidden');
             document.getElementById('analysisReportTitle').innerText = 'Detail Laporan: ' + product.name;
             const rawText = generateRawReportText(product.name, product.report);
-            document.getElementById('analysisReportContent').innerHTML = rawText.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            document.getElementById('analysisReportContent').innerHTML = rawText.replace(/\n/g, '<br>');
         }
         
         const formatRp = (num) => 'Rp ' + Number(num || 0).toLocaleString('id-ID');
@@ -836,17 +836,22 @@ Petunjuk:
             window.renderExpenseItems();
         };
 
+        // DIPERBARUI: Tata letak pengeluaran responsif & bertumpuk rapi ke bawah (UX Mobile Friendly)
         window.renderExpenseItems = function() {
             const container = document.getElementById('expenseItemsContainer');
             container.innerHTML = '';
             window.expenseItems.forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="flex gap-2 items-center">
-                        <input type="text" placeholder="Nama bahan..." value="${item.nama}" oninput="window.updateExpense(${index}, 'nama', this.value)" class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
-                        <input type="number" placeholder="Harga..." value="${item.harga}" oninput="window.updateExpense(${index}, 'harga', this.value)" class="w-28 sm:w-32 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
-                        <button onclick="window.removeExpense(${index})" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                    <div class="p-3 bg-white border border-gray-200 rounded-xl space-y-2.5 shadow-sm">
+                        <div class="flex gap-2 items-center">
+                            <input type="text" placeholder="Nama bahan (contoh: Telur 1kg)..." value="${item.nama}" oninput="window.updateExpense(${index}, 'nama', this.value)" class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
+                            <button onclick="window.removeExpense(${index})" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0" title="Hapus">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                        <div>
+                            <input type="number" placeholder="Nominal Harga (Rp)..." value="${item.harga}" oninput="window.updateExpense(${index}, 'harga', this.value)" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
+                        </div>
                     </div>
                 `;
             });
@@ -889,7 +894,7 @@ Petunjuk:
             if (reportObj.pengeluaran && reportObj.pengeluaran.length > 0) {
                 reportObj.pengeluaran.forEach(item => {
                     if(item.nama && item.harga) {
-                        expenseLines += `- ${item.nama}: Rp ${Number(item.harga).toLocaleString('id-ID')}\n`;
+                        expenseLines += `- ${item.nama} Rp${Number(item.harga).toLocaleString('id-ID')}\n`;
                         totalPengeluaran += Number(item.harga);
                     }
                 });
@@ -898,36 +903,41 @@ Petunjuk:
             }
 
             const modalAwal = Number(reportObj.modalAwal || 0);
-            const keuntungan = Number(reportObj.keuntungan || 0);
-            let pertumbuhanText = "0%";
-            if (modalAwal > 0) {
-                let calc = (keuntungan / modalAwal) * 100;
-                pertumbuhanText = (Number.isInteger(calc) ? calc : calc.toFixed(2)) + "%";
-            } else if (modalAwal === 0 && keuntungan > 0) {
-                pertumbuhanText = "Tak terhingga (Modal Rp 0)";
-            }
+            const hasilKotor = Number(reportObj.hasilKotor || 0);
+            const totalPesanan = Number(reportObj.totalPesanan || 0);
+            const sisaModal = modalAwal - totalPengeluaran;
+            const keuntungan = hasilKotor - totalPengeluaran;
+            const uangKeseluruhan = hasilKotor + sisaModal;
+            const hargaPerBox = totalPesanan > 0 ? Math.round(hasilKotor / totalPesanan) : 0;
 
-            return `*LAPORAN PENJUALAN DANUSAN*
-Produk: ${productName}
-Total Terjual: ${reportObj.totalPesanan || 0} Porsi
+            const sisaModalStr = sisaModal < 0 ? `-Rp${Math.abs(sisaModal).toLocaleString('id-ID')}` : `Rp${sisaModal.toLocaleString('id-ID')}`;
+            const uangKeseluruhanFormula = sisaModal < 0 
+                ? `Rp${hasilKotor.toLocaleString('id-ID')} - Rp${Math.abs(sisaModal).toLocaleString('id-ID')}` 
+                : `Rp${hasilKotor.toLocaleString('id-ID')} + Rp${sisaModal.toLocaleString('id-ID')}`;
 
-*PEMASUKAN*
-Modal Awal: Rp ${modalAwal.toLocaleString('id-ID')}
-Hasil Kotor: Rp ${Number(reportObj.hasilKotor || 0).toLocaleString('id-ID')}
+            return `Danusan ${productName}
 
-*PENGELUARAN*
+⚫ Pemasukan 
+> Dana kas Osis = Rp${modalAwal.toLocaleString('id-ID')}
+
+⚪ Pengeluaran 
 ${expenseLines.trim()}
-Total Pengeluaran: Rp ${totalPengeluaran.toLocaleString('id-ID')}
+> Total : Rp${totalPengeluaran.toLocaleString('id-ID')}
 
-*HASIL AKHIR*
-Pertumbuhan: ${pertumbuhanText}
-Keuntungan (Bersih): Rp ${keuntungan.toLocaleString('id-ID')}`;
+⚫ Sisa modal
+> Rp${modalAwal.toLocaleString('id-ID')} - Rp${totalPengeluaran.toLocaleString('id-ID')} = ${sisaModalStr}
+⚫ Hasil penjualan
+> ${totalPesanan} box × Rp${hargaPerBox.toLocaleString('id-ID')} = Rp${hasilKotor.toLocaleString('id-ID')}
+⚪ Keuntungan penjualan 
+> Rp${hasilKotor.toLocaleString('id-ID')} - Rp${totalPengeluaran.toLocaleString('id-ID')} = Rp${keuntungan.toLocaleString('id-ID')} [keuntungan]
+⚪ Uang keseluruhan
+> ${uangKeseluruhanFormula} = Rp${uangKeseluruhan.toLocaleString('id-ID')}`;
         }
 
         window.renderFinalReportText = function(productName, reportObj) {
             const rawText = generateRawReportText(productName, reportObj);
             window.currentReportTextRaw = rawText;
-            document.getElementById('finalReportText').innerHTML = rawText.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            document.getElementById('finalReportText').innerHTML = rawText.replace(/\n/g, '<br>');
         };
 
         window.copyReportWA = function() {
