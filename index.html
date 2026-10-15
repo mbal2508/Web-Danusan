@@ -836,21 +836,23 @@ Petunjuk:
             window.renderExpenseItems();
         };
 
-        // DIPERBARUI: Tata letak pengeluaran responsif & bertumpuk rapi ke bawah (UX Mobile Friendly)
+        // DIPERBARUI: Tata letak pengeluaran simetris & responsive sempurna untuk mobile/HP maupun desktop
         window.renderExpenseItems = function() {
             const container = document.getElementById('expenseItemsContainer');
             container.innerHTML = '';
             window.expenseItems.forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="p-3 bg-white border border-gray-200 rounded-xl space-y-2.5 shadow-sm">
-                        <div class="flex gap-2 items-center">
-                            <input type="text" placeholder="Nama bahan (contoh: Telur 1kg)..." value="${item.nama}" oninput="window.updateExpense(${index}, 'nama', this.value)" class="flex-1 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
-                            <button onclick="window.removeExpense(${index})" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0" title="Hapus">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
+                    <div class="p-3.5 bg-white border border-gray-200 rounded-2xl space-y-2.5 shadow-sm">
+                        <!-- Baris 1: Nama Bahan (Full Width) -->
                         <div>
-                            <input type="number" placeholder="Nominal Harga (Rp)..." value="${item.harga}" oninput="window.updateExpense(${index}, 'harga', this.value)" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
+                            <input type="text" placeholder="Nama bahan (contoh: Minyak Wijen)..." value="${item.nama}" oninput="window.updateExpense(${index}, 'nama', this.value)" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
+                        </div>
+                        <!-- Baris 2: Harga & Tombol Hapus (Sejajar & Simetris) -->
+                        <div class="flex gap-2 items-center">
+                            <input type="number" placeholder="Nominal Harga (Rp)..." value="${item.harga}" oninput="window.updateExpense(${index}, 'harga', this.value)" class="flex-1 border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-brand-green outline-none bg-white">
+                            <button onclick="window.removeExpense(${index})" class="bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 p-3 rounded-xl transition-colors shrink-0 flex items-center justify-center border border-red-200" title="Hapus Bahan">
+                                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </div>
                     </div>
                 `;
